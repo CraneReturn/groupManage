@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "references": [
+      {
+          "path": "./tsconfig.node.json"
+      },
+      {
+          "path": "./tsconfig.app.json"
+      }
+  ],
+  "compilerOptions": {
+      "lib": ["webworker"],
+      "types": ["node","element-plus/global"]
+  }
+}
