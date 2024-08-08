@@ -1,6 +1,6 @@
-import "@/styles/main.css";
+import "@/assets/base.css";
+import "@/assets/main.css";
 import "animate.css";
-import "@/styles/variables.scss";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 // @ts-ignore

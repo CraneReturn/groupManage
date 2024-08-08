@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { getToken, removeToken, setToken } from "../../util/auth";
-import defultHead from "@/assets/images/userPhoto/defaultHead.png";
 // 存储用户信息
 type user = {
   token: string;
