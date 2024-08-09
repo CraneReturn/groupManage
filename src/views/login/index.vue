@@ -29,6 +29,7 @@ import Login from "./login.vue";
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
+  
 }
 .top {
   padding: 5px 10px;
@@ -59,6 +60,7 @@ import Login from "./login.vue";
     letter-spacing: 5px;
     color: var(--el-color-white);
     height: 40%;
+    padding-left: 100px;
     p {
       font-size: 25px;
       font-family: cursive;

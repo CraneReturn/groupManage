@@ -48,6 +48,7 @@ const changePassword = () => {
   display: flex;
   flex-direction: column;
   gap: 30px;
+  box-shadow: 1px 2px 10px #333;
 
   .title {
     font-size: 23px;
