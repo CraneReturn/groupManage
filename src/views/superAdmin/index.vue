@@ -19,6 +19,7 @@
           </div>
         </div>
       </el-header>
+      <Avator></Avator>
       <el-container class="main">
         <el-aside width="220px"
           ><el-menu
@@ -73,6 +74,7 @@ import {
   UserFilled,
   Setting,
 } from "@element-plus/icons-vue";
+import Avator from './components/Avator.vue'
 const isCollapse = ref(false);
 </script>
 <style lang="scss" scoped>
