@@ -36,25 +36,35 @@ const router = createRouter({
     },
     {
       path: '/superAdmin',
+      name:'superAdmin',
       component: () => import("@/views/superAdmin/index.vue"),
       children:[
         {
-          path:"/allGroups",
+          path:"allGroups",
+          name:'allGroups',
           component: ()=>import('@/views/superAdmin/layouts/allGroupsAdmin/allGroupsAdmin.vue'),
         },
         {
-          path:"/allTeachers",
+          path:"allTeachers",
+          name:'allTeachers',
           component: ()=>import('@/views/superAdmin/layouts/allTeachersAdmin/allTeachersAdmin.vue'),
         },
         {
-          path:"/groupReview",
+          path:"groupReview",
+          name:"groupReview",
           component: ()=>import('@/views/superAdmin/layouts/groupReview/groupReview.vue'),
         },
         {
-          path:"/repairReview",
+          path:"repairReview",
+          name:"repairReview",
           component: ()=>import('@/views/superAdmin/layouts/repairReview/repairReview.vue'),
         },
       ]
+    },
+    {
+      path: '/analysis',
+      name: 'Analysis',
+      component: () => import('@/views/Dashboard/Analysis.vue'),
     }
   ],
 });
