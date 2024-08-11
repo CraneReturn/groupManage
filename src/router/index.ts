@@ -27,6 +27,16 @@ const router = createRouter({
           name: "member",
           component: () => import("@/views/teacher/member.vue"),
         },
+        {
+          path: "info",
+          name: "info",
+          component: () => import("@/views/teacher/groupInfo.vue"),
+        },
+        {
+          path: "person",
+          name: "person",
+          component: () => import("@/views/teacher/person.vue"),
+        },
       ],
     },
     {
