@@ -53,12 +53,18 @@ const router = createRouter({
           path:"groupReview",
           name:"groupReview",
           component: ()=>import('@/views/superAdmin/layouts/groupReview/groupReview.vue'),
+
         },
         {
           path:"repairReview",
           name:"repairReview",
           component: ()=>import('@/views/superAdmin/layouts/repairReview/repairReview.vue'),
         },
+        {
+          path:'groupStudents',
+          name:'groupStudents',
+          component: ()=>import('@/views/superAdmin/layouts/allGroupsAdmin/components/groupStudents.vue')
+        }
       ]
     },
     {

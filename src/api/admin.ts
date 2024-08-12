@@ -9,18 +9,24 @@ export function getGroup(groupName:any,pageNum:any,pageSize:any,status:any){
         })
     }
     else{
-        return service({
-            url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
-            method:"get",
-        })
+        if(groupName!=''&&status==''){
+            return service({
+                url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}`,
+                method:"get",
+            })
+        }else{
+            return service({
+                url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
+                method:"get",
+            })
+        }
     }
 }
 // 查看小组所有学生
-export function getGroupStu(){
+export function getGroupStu(groupId:any,pageNum:any,pageSize:any){
     return service({
-        url:'/admin/getGroupStu',
+        url:`/admin/getGroupStu?groupId=${groupId}&pageNum=${pageNum}&pageSize=${pageSize}`,
         method:"get",
-
     })
 }
 // 修改小组基本信息
