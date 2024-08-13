@@ -1,22 +1,24 @@
 <template>
   <div style="padding: 1%;">
     <div class="mt-4">
-    <el-input
-      v-model="input3"
-      style="max-width: 500px;float: left"
-      placeholder="请输入要搜索的小组名"
-      class="input-with-select"
-      >
-      <template #append >
-        <el-button :icon="Search" @click="searchGroup(input3)" />
-      </template>
-    </el-input>
-  </div>
+      <el-input
+        v-model="input3"
+        style="max-width: 500px;float: left"
+        placeholder="请输入要搜索的小组名"
+        class="input-with-select"
+        >
+        <template #append >
+          <el-button :icon="Search" @click="searchGroup(input3)" />
+        </template>
+      </el-input>
+    </div>
     <div class="el-form-item__content" style="float: right;margin-right: 200px">
         <el-button type="default" :icon="RefreshRight" @click="refreshData()">  
             <span style="vertical-align: middle"> 重置 </span>
         </el-button>   
     </div>
+
+    
     <br>
     <br>
 <div>

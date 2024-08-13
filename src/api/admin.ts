@@ -46,10 +46,26 @@ export function putGroup(groupUpdateDTO:GroupUpdateDTO){
 
 // 查看所有老师
 export function getTea(account:any,nickname:any,pageNum:any,pageSize:any){
-    return service({
-        url:`/admin/getTea?account=${account}&nickname=${nickname}&pageNum=${pageNum}&pageSize=${pageSize}`,
-        method:"get",
-    })
+    if(account==''&&nickname==''){
+        return service({
+            url:`/admin/getTea?pageNum=${pageNum}&pageSize=${pageSize}`,
+            method:"get",
+        })
+    }else{
+         if(account==''&&nickname!=''){
+            return service({
+                url:`/admin/getTea?nickname=${nickname}&pageNum=${pageNum}&pageSize=${pageSize}`,
+                method:"get",
+            })
+        }else{
+            return service({
+                url:`/admin/getTea?account=${account}&pageNum=${pageNum}&pageSize=${pageSize}`,
+                method:"get",
+            })
+        }
+
+    }
+
 }
 
 // 导入老师
@@ -69,9 +85,10 @@ export function putTea(){
 }
 
 // 删除教师
-export function del(){
+export function del(ids:any){
+    const idsParam=ids.map(id=>`ids=${id}`).join('&');
     return service({
-        url:'/admin/del',
+        url:`/admin/del?${idsParam}`,
         method:"delete",
     })
 }
