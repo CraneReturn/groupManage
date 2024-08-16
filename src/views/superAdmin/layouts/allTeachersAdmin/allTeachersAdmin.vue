@@ -26,6 +26,17 @@
       </div>
     </div>
       <div style="height: 50px;">
+        <el-input 
+        type="file" 
+        @change="handleFileChange" 
+        style="width: 240px;"
+        accept=".xlsx,.xls" />
+        <el-button @click="submitFile" type="primary" :icon="Plus">
+          <span style="vertical-align: middle">导入教师信息</span>
+          </el-button>
+        <el-button @click="downloadTeacher" type="success" :icon="Download">
+          <span style="vertical-align: middle">下载导入老师样表</span>
+          </el-button>
         <el-button @click="handleDelete()" type="danger" :icon="Delete">
           <span style="vertical-align: middle">删除</span>
           </el-button>
@@ -75,13 +86,16 @@
  
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
+import { Download  } from '@element-plus/icons-vue'
 import { RefreshRight } from '@element-plus/icons-vue'
+import { Plus } from '@element-plus/icons-vue'
 import { Delete } from '@element-plus/icons-vue'
 import {reactive, ref } from 'vue'
 import { ElTable, rowContextKey } from 'element-plus'
 import { getTea } from '@/api/admin.ts';
 import { del } from '@/api/admin.ts'
 import { ElMessage } from 'element-plus'
+import { uploadTea } from '@/api/admin.ts';
 interface User {
   id:string
   account: string
@@ -104,6 +118,48 @@ const teachers=ref([]);
 const select = ref('')
 const account=ref('');
 const nickname=ref('')
+const file = ref(null);
+const downloadTeacher=()=>{
+    // 创建一个隐藏的链接元素
+    const link = document.createElement('a');
+  
+  // 设置文件的 URL，假设模板文件存储在 public/templates/teacher_template.xlsx
+  link.href = '/templates/teacher-template.xlsx';
+  
+  // 设置下载的文件名
+  link.download = 'teacher-template.xlsx';
+  
+  // 触发点击事件，下载文件
+  link.click();
+}
+// 选择文件
+const handleFileChange = (event) => {
+  const selectedFile = event.target.files[0];
+  if (selectedFile) {
+    // 检查文件类型
+    const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+    if (allowedTypes.includes(selectedFile.type)) {
+      file.value = selectedFile;
+    } else {
+      alert('请选择有效的 Excel 文件。');
+      file.value = null;
+    }
+  }
+};
+// 上传文件
+const submitFile = async () => {
+  if (file.value) {
+    try {
+      await uploadTea(file.value);
+      alert('文件上传成功');
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      alert('文件上传失败');
+    }
+  } else {
+    alert('请先选择一个文件。');
+  }
+};
 const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val
 }
@@ -124,8 +180,6 @@ const handleDelete=async()=>{
   }
   
 }
-
-
 // 从接口获取数据
 const fetchTeachers=async(account,nickname,pageNum,pageSize)=>{
 try{

@@ -69,10 +69,17 @@ export function getTea(account:any,nickname:any,pageNum:any,pageSize:any){
 }
 
 // 导入老师
-export function uploadTea(){
+export function uploadTea(file:any){
+    // 创建一个FormData对象
+    const formData=new FormData();
+    formData.append('file',file);
     return service({
         url:'/admin/uploadTea',
         method:"post",
+        headers:{
+            'Content-Type':'multipart/form-data'
+        },
+        data:formData
     })
 }
 
