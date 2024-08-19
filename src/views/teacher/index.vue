@@ -42,19 +42,33 @@
           >
             <el-menu-item index="1">
               <el-icon><Comment /></el-icon>
-              <template #title>消息</template>
+              <template #title
+                ><router-link to="/teacher/message">消息</router-link></template
+              >
             </el-menu-item>
             <el-sub-menu index="2">
               <template #title>
                 <el-icon><UserFilled /></el-icon>
                 <span>成员管理</span>
               </template>
-              <el-menu-item index="2-1">组织成员</el-menu-item>
-              <el-menu-item index="2-2">组织考勤</el-menu-item>
+              <el-menu-item index="2-1">
+                <router-link to="/teacher/member"
+                  >组织成员</router-link
+                ></el-menu-item
+              >
+              <el-menu-item index="2-2"
+                ><router-link to="/teacher/attend"
+                  >组织考勤</router-link
+                ></el-menu-item
+              >
             </el-sub-menu>
             <el-menu-item index="3">
               <el-icon><Management /></el-icon>
-              <template #title>信息管理</template>
+              <template #title
+                ><router-link to="/teacher/info"
+                  >信息管理</router-link
+                ></template
+              >
             </el-menu-item>
             <el-menu-item index="4" disabled>
               <el-icon><setting /></el-icon>
@@ -222,5 +236,9 @@ const isCollapse = ref(false);
 }
 .change {
   cursor: pointer;
+}
+a {
+  color: #12181d;
+  background-color: transparent;
 }
 </style>
