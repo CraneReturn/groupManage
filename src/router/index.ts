@@ -20,22 +20,27 @@ const router = createRouter({
         {
           path: "message",
           name: "message",
-          component: () => import("@/views/teacher/message.vue"),
+          component: () => import("@/views/teacher/layouts/message/index.vue"),
         },
         {
           path: "member",
           name: "member",
-          component: () => import("@/views/teacher/member.vue"),
+          component: () => import("@/views/teacher/layouts/member/index.vue"),
         },
         {
           path: "info",
           name: "info",
-          component: () => import("@/views/teacher/groupInfo.vue"),
+          component: () => import("@/views/teacher/layouts/groupInfo/index.vue"),
         },
         {
           path: "person",
           name: "person",
           component: () => import("@/views/teacher/person.vue"),
+        },
+        {
+          path: "attend",
+          name: "attend",
+          component: () => import("@/views/teacher/layouts/member/attend.vue"),
         },
       ],
     },

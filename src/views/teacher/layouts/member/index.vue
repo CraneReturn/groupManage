@@ -1,14 +1,6 @@
 <template>
   <!-- 组织成员管理 -->
   <div class="memberManage">
-    <div class="title">
-      <h3>组织成员</h3>
-      <div class="addMember">
-        <el-button>添加成员</el-button>
-        <el-button>导入成员列表</el-button>
-      </div>
-    </div>
-
     <div class="statistic">
       <el-row :gutter="10">
         <el-col :span="6">
@@ -73,6 +65,7 @@
         </el-col>
       </el-row>
     </div>
+
     <div class="moreInfo">
       <!-- 当前小组信息 -->
       <div class="principalInfo" ref="current"></div>
@@ -80,9 +73,34 @@
         <!-- echarts展示当前人数分布 -->
       </div>
     </div>
+    <div class="title">
+      <div class="searchMember">
+        <el-select v-model="value" placeholder="Select" style="width: 150px">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            :disabled="item.disabled"
+          />
+        </el-select>
+        <el-input
+          v-model="input"
+          style="width: 240px"
+          placeholder="Please input"
+        />
+        <el-button type="primary">搜索</el-button>
+      </div>
+      <div class="addMember">
+        <el-button>添加成员</el-button>
+        <el-button>导入成员列表</el-button>
+      </div>
+    </div>
+    <List />
   </div>
 </template>
 <script setup lang="ts">
+import List from "./gradeList.vue";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useTransition } from "@vueuse/core";
 import * as echarts from "echarts";
@@ -91,7 +109,31 @@ const outputValue = useTransition(source, {
   duration: 1500,
 });
 source.value = 172000;
-
+const input = ref();
+const value = ref("");
+const options = [
+  {
+    value: "Option1",
+    label: "Option1",
+  },
+  {
+    value: "Option2",
+    label: "Option2",
+    disabled: true,
+  },
+  {
+    value: "Option3",
+    label: "Option3",
+  },
+  {
+    value: "Option4",
+    label: "Option4",
+  },
+  {
+    value: "Option5",
+    label: "Option5",
+  },
+];
 // 引用 chartContainer
 const chartContainer = ref(null);
 const current = ref(null);
@@ -249,9 +291,8 @@ onBeforeUnmount(() => {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
   .echarts {
-    width: 60%;
+    width: 55%;
     border-radius: 4px;
     background-color: #fff;
     margin: 10px;
@@ -270,5 +311,13 @@ onBeforeUnmount(() => {
 .title {
   display: flex;
   justify-content: space-between;
+  height: 100px;
+  padding: 20px 10px;
+  align-items: center;
+  .searchMember {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 }
 </style>
