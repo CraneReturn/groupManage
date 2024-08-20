@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { getToken, removeToken, setToken } from "../../util/auth";
+import { login } from "@/api/login";
+import { jwtDecode } from "jwt-decode";
 // 存储用户信息
 type user = {
   token: string;
@@ -23,6 +25,18 @@ export const userStore = defineStore("user", {
   },
   actions: {
     // 封装login
+    Login(account: string, password: string) {
+      return new Promise(() => {
+        login(account, password).then((response) => {
+          if (response) {
+            setToken(response.data);
+            this.token = response.data;
+            const userInfo = jwtDecode(response.data);
+            console.log(userInfo);
+          }
+        });
+      });
+    },
     Logout() {
       return new Promise(() => {
         this.token = "";
