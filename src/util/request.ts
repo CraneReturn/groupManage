@@ -88,7 +88,10 @@ service.interceptors.response.use(
       return res.data;
     }
     if (code === 40100) {
-      if (!isRelogin.show) {
+      if (res.config.url === "user/login") {
+        ElMessage({ message: msg, type: "error" });
+        return Promise.reject(new Error(msg));
+      } else if (!isRelogin.show) {
         isRelogin.show = true;
         ElMessageBox.confirm(
           "登录状态已过期，您可以继续留在该页面，或者重新登录",
@@ -106,7 +109,7 @@ service.interceptors.response.use(
           })
           .then(() => {
             // 重新登录后的处理，比如跳转到首页
-            location.href = process.env.VUE_APP_CONTEXT_PATH + "/home";
+            location.href = "/home";
           })
           .catch(() => {
             isRelogin.show = false;
