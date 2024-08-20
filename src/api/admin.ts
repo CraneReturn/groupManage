@@ -9,18 +9,24 @@ export function getGroup(groupName:any,pageNum:any,pageSize:any,status:any){
         })
     }
     else{
-        return service({
-            url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
-            method:"get",
-        })
+        if(groupName!=''&&status==''){
+            return service({
+                url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}`,
+                method:"get",
+            })
+        }else{
+            return service({
+                url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
+                method:"get",
+            })
+        }
     }
 }
 // 查看小组所有学生
-export function getGroupStu(){
+export function getGroupStu(groupId:any,pageNum:any,pageSize:any){
     return service({
-        url:'/admin/getGroupStu',
+        url:`/admin/getGroupStu?groupId=${groupId}&pageNum=${pageNum}&pageSize=${pageSize}`,
         method:"get",
-
     })
 }
 // 修改小组基本信息
@@ -40,17 +46,40 @@ export function putGroup(groupUpdateDTO:GroupUpdateDTO){
 
 // 查看所有老师
 export function getTea(account:any,nickname:any,pageNum:any,pageSize:any){
-    return service({
-        url:`/admin/getTea?account=${account}&nickname=${nickname}&pageNum=${pageNum}&pageSize=${pageSize}`,
-        method:"get",
-    })
+    if(account==''&&nickname==''){
+        return service({
+            url:`/admin/getTea?pageNum=${pageNum}&pageSize=${pageSize}`,
+            method:"get",
+        })
+    }else{
+         if(account==''&&nickname!=''){
+            return service({
+                url:`/admin/getTea?nickname=${nickname}&pageNum=${pageNum}&pageSize=${pageSize}`,
+                method:"get",
+            })
+        }else{
+            return service({
+                url:`/admin/getTea?account=${account}&pageNum=${pageNum}&pageSize=${pageSize}`,
+                method:"get",
+            })
+        }
+
+    }
+
 }
 
 // 导入老师
-export function uploadTea(){
+export function uploadTea(file:any){
+    // 创建一个FormData对象
+    const formData=new FormData();
+    formData.append('file',file);
     return service({
         url:'/admin/uploadTea',
         method:"post",
+        headers:{
+            'Content-Type':'multipart/form-data'
+        },
+        data:formData
     })
 }
 
@@ -63,9 +92,10 @@ export function putTea(){
 }
 
 // 删除教师
-export function del(){
+export function del(ids:any){
+    const idsParam=ids.map(id=>`ids=${id}`).join('&');
     return service({
-        url:'/admin/del',
+        url:`/admin/del?${idsParam}`,
         method:"delete",
     })
 }

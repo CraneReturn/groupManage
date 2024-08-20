@@ -1,11 +1,24 @@
 <!-- 教师端小组信息 -->
 <template>
   <div class="layoutTeacher">
-    <el-container class="main">
+    <el-container>
       <el-header class="header">
         <div class="left">
-          <h1>小组管理系统</h1>
-          <div class="change"></div>
+          <!-- 头部信息 -->
+          <!-- 小组logo以及小组名称 -->
+          <div class="logoAbout" :class="isCollapse ? 'active' : 'passive'">
+            <div class="logo">
+              <img src="@/assets/image/小组logo.png" alt="logo" />
+            </div>
+            <div class="info">
+              <h1>未来软件工作室</h1>
+              <span>指导教师</span>
+            </div>
+          </div>
+          <div class="change" @click="isCollapse = !isCollapse">
+            <el-icon size="25px" v-if="!isCollapse"><Expand /></el-icon>
+            <el-icon size="25px" v-else><Fold /></el-icon>
+          </div>
         </div>
         <div class="right">
           <div class="userInfo">
@@ -19,48 +32,66 @@
           </div>
         </div>
       </el-header>
-      <el-container class="main">
-        <el-aside width="220px"
-          ><el-menu
+      <el-container class="mainEqual">
+        <el-aside :class="!isCollapse ? 'aside' : 'asideCollapse'">
+          <el-menu
             default-active="2"
             class="el-menu-vertical-demo"
             :collapse="isCollapse"
             background-color="#fff"
           >
-            <!-- 头部信息 -->
-            <!-- 小组logo以及小组名称 -->
-            <div class="logoAbout">
-              <div class="logo">
-                <img src="@/assets/image/小组logo.png" alt="logo" />
-              </div>
-              <div class="info">
-                <h1>未来软件工作室</h1>
-                <span>指导教师</span>
-              </div>
-            </div>
             <el-menu-item index="1">
               <el-icon><Comment /></el-icon>
-              <template #title>消息</template>
+              <template #title
+                ><router-link to="/teacher/message">消息</router-link></template
+              >
             </el-menu-item>
             <el-sub-menu index="2">
               <template #title>
                 <el-icon><UserFilled /></el-icon>
                 <span>成员管理</span>
               </template>
-              <el-menu-item index="2-1">组织成员</el-menu-item>
-              <el-menu-item index="2-2">组织考勤</el-menu-item>
+              <el-menu-item index="2-1">
+                <router-link to="/teacher/member"
+                  >组织成员</router-link
+                ></el-menu-item
+              >
+              <el-menu-item index="2-2"
+                ><router-link to="/teacher/attend"
+                  >组织考勤</router-link
+                ></el-menu-item
+              >
             </el-sub-menu>
             <el-menu-item index="3">
               <el-icon><Management /></el-icon>
-              <template #title>信息管理</template>
+              <template #title
+                ><router-link to="/teacher/info"
+                  >信息管理</router-link
+                ></template
+              >
             </el-menu-item>
             <el-menu-item index="4" disabled>
               <el-icon><setting /></el-icon>
               <template #title>更多</template>
             </el-menu-item>
-          </el-menu></el-aside
-        >
-        <el-main><RouterView /></el-main>
+          </el-menu>
+        </el-aside>
+
+        <el-main>
+          <div class="mainTable">
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item :to="{ path: '/' }"
+                >homepage</el-breadcrumb-item
+              >
+              <el-breadcrumb-item>
+                <a href="/">promotion management</a>
+              </el-breadcrumb-item>
+              <el-breadcrumb-item>promotion list</el-breadcrumb-item>
+              <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
+            </el-breadcrumb>
+            <RouterView />
+          </div>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -72,6 +103,8 @@ import {
   Comment,
   Management,
   UserFilled,
+  Expand,
+  Fold,
   Setting,
 } from "@element-plus/icons-vue";
 const isCollapse = ref(false);
@@ -80,25 +113,46 @@ const isCollapse = ref(false);
 .el-menu-item:hover {
   --el-menu-hover-bg-color: #dfe0e095;
 }
-.el-menu {
+.mainTable {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   height: 100%;
 }
-:deep(.el-container) {
+.aside {
+  width: 220px;
+  transition-delay: 300ms;
+  transition-duration: 0.25s;
+}
+.asideCollapse {
+  width: 65px;
+}
+.el-menu {
   height: 100%;
+  transition-duration: 0.25s;
+  transition: width 0.25s;
+  overflow: hidden;
+}
+:deep(.mainEqual) {
+  height: 90vh;
 }
 .layoutTeacher {
   width: 100vw;
   height: 100vh;
   background-color: #ebebeb;
   header {
-    height: 60px;
+    height: 10vh;
     display: flex;
     justify-content: space-between;
     background-color: #ececfa;
     padding: 0;
     --el-header-padding: 0;
-    padding: 0 20px;
+    padding-right: 20px;
     align-items: center;
+    .left {
+      display: flex;
+      align-items: center;
+    }
     .userInfo {
       display: flex;
       align-items: center;
@@ -118,18 +172,33 @@ const isCollapse = ref(false);
       }
     }
   }
+
   .logoAbout {
     display: flex;
     align-items: center;
-    gap: 15px;
-    transition-duration: 0.25s;
+    overflow: hidden;
+    transition: width 0.25s, background-color 0.25s;
     border-radius: 10px;
-    padding: 10px;
-    padding-right: 20px;
+    padding: 5px;
     cursor: pointer;
+    .info {
+      transition: opacity 0.25s ease, width 0.25s ease;
+      white-space: nowrap;
+      h1 {
+        font-size: 15px;
+      }
+      span {
+        font-size: 10px;
+        border-radius: 4px;
+        padding: 2px 5px;
+        border: 1px solid #ccc;
+        color: #9c9c9c;
+      }
+    }
   }
+
   .logoAbout:hover {
-    background-color: #dedfe0;
+    background-color: #dedfe0a6;
   }
   .logo {
     width: 50px;
@@ -143,20 +212,33 @@ const isCollapse = ref(false);
       width: 100%;
     }
   }
-  .info {
-    h1 {
-      font-size: 15px;
-    }
-    span {
-      font-size: 10px;
-      border-radius: 4px;
-      padding: 2px 5px;
-      border: 1px solid #ccc;
-      color: #9c9c9c;
-    }
-  }
 }
 .el-main {
   background-color: #fff;
+}
+.active {
+  width: 65px;
+  gap: 0;
+  .info {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+}
+.passive {
+  width: 220px;
+  gap: 15px;
+  .info {
+    opacity: 1;
+    width: 145px;
+    overflow: hidden;
+  }
+}
+.change {
+  cursor: pointer;
+}
+a {
+  color: #12181d;
+  background-color: transparent;
 }
 </style>

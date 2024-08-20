@@ -1,283 +1,258 @@
-
-<script lang="ts">
-import { defineComponent, reactive, toRefs,ref,onMounted } from "vue";
-import { getTea } from '@/api/admin.ts';
-import admin from '@/api/admin.ts'
-export default defineComponent({
-  name: "HomeView",
-  components: {},
-  setup() {
-   const teachers=ref([]);
-   const fetchTeachers=async()=>{
-    try{
-      const response=await getTea(1,1,1,1);
-      teachers.value=response.data;//根据接口返回的数据结构进行调整
-      console.log('教师数据列表:',teachers.value);
-      
-    }catch(error){
-      console.error('Error fetching teachers:',error);
-      
-    }
-   }
-
-    //表格的全数据（这里是自定义的列表，要看分页效果自行往此数组内加数据）
-    const allTableData = [
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-02",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-04",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-01",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-    ];
-    //表格用到的参数
-    const state = reactive({
-      page: 1,
-      limit: 10,
-      total: allTableData.length,
-    });
-    //前端限制分页（tableData为当前展示页表格）
-    const tableData = () => {
-      return allTableData.filter(
-        (item, index) =>
-          index <= state.page * state.limit &&
-          index > state.limit * (state.page - 1)
-      );
-    };
-    //改变页码
-    const handleCurrentChange = (e) => {
-      state.page = e;
-    };
-    //改变页数限制
-    const handleSizeChange = (e) => {
-      state.limit = e;
-    };
-    onMounted(()=>{
-      fetchTeachers();
-    })
-    return {
-      teachers,
-      fetchTeachers,
-      allTableData,
-      tableData,
-      handleCurrentChange,
-      handleSizeChange,
-      ...toRefs(state),
-    };
-  },
-});
-</script>
-
-<style lang="less">
-
-.el-form {
-    --el-form-label-font-size: 14px;
-    --el-form-inline-content-width: 220px;
-    .el-form-item {
-      display: inline-flex;
-      margin-right: 32px;
-      vertical-align: middle;
-    }
-      .el-form--inline{
-      display: inline-flex;
-      margin-right: 32px;
-      vertical-align: middle;
-      .el-form-item__label-wrap {
-        display: flex;
-        
-      .el-form-item--default {
-        .el-form-item__label {
-          height: 32px;
-          line-height: 32px;
-      }
-      }
-
-      }
-      }
-      .el-form--inline .el-form-item {
-          display: inline-flex;
-          margin-right: 32px;
-          vertical-align: middle;
-      .el-form-item--default{
-        .el-form-item__label {
-          height: 32px;
-          line-height: 32px;
-      }
-      } 
-      .el-form-item__content {
-    align-items: center;
-    display: flex;
-    flex: 1;
-    flex-wrap: wrap;
-    font-size: var(--font-size);
-    line-height: 32px;
-    min-width: 0;
-    position: relative;
-}
-      }
-       .el-form-item--default {
-          --font-size: 14px;
-          --el-form-label-font-size: var(--font-size);
-          margin-bottom: 18px;
-      }
-}
-</style>
 <template >
   <div style="padding: 1%;margin-top: 3%;">
-    <div>
-    <form data-v-6f2b9b53="" class="el-form  el-form--inline v-form">
-    <div data-v-6f2b9b53="" class="el-form-item el-form-item--default is-no-asterisk asterisk-left">
-        <div class="el-form-item__label-wrap">
-            <label id="el-id-4586-62" for="el-id-4586-74" class="el-form-item__label" style="width: auto;">教师信息管理</label></div>
-            <div class="el-form-item__content">
-                <div data-v-6f2b9b53="" class="el-input el-input--default el-input--suffix" style="width: 100%;">
-                    <!-- input --><!-- prepend slot --><!--v-if-->
-                     <div class="el-input__wrapper" tabindex="-1">
-                        <!-- prefix slot --><!--v-if-->
-                        <input class="el-input__inner" type="text" autocomplete="off" tabindex="0" placeholder="请输入" id="el-id-4586-74"><!-- suffix slot --><!--v-if--></div><!-- append slot --><!--v-if--></div></div></div><div data-v-6f2b9b53="" class="el-form-item el-form-item--default is-no-asterisk asterisk-left" role="group" aria-labelledby="el-id-4586-63" slots="[object Object]"><div id="el-id-4586-63" class="el-form-item__label" style="width: 0px;">
-                            <span data-v-6f2b9b53="">&nbsp;</span></div>
-                            <div class="el-form-item__content"><div data-v-6f2b9b53="">
-                                <button aria-disabled="false" type="button" class="el-button el-button--primary el-button--default v-button color-#fff" darker="false" style="--el-button-bg-color: #409eff; --el-button-text-color: #fff; --el-button-border-color: #409eff; --el-button-hover-bg-color: rgb(121, 187, 255); --el-button-hover-text-color: #fff; --el-button-hover-border-color: rgb(121, 187, 255); --el-button-active-bg-color: rgb(55, 130, 208); --el-button-active-border-color: rgb(55, 130, 208);"><i class="el-icon"><i data-v-9dae935e="" class="el-icon v-icon" style="font-size: 16px; --2ea6d154: undefined;">
-                                <div data-v-9dae935e="" class="vi-epSearch iconify" style="font-size: 16px;"></div></i>
-                            </i><span class="">查询</span>
-                        </button>
-                        <button aria-disabled="false" type="button" class="el-button el-button--default el-button--default is-plain v-button color-#fff" darker="false">
-                            <i class="el-icon"><i data-v-9dae935e="" class="el-icon v-icon" style="font-size: 16px; --2ea6d154: undefined;">
-                                <div data-v-9dae935e="" class="vi-ep:refresh-right iconify" style="font-size: 16px;">
+    <div style="height: 54px;">
+      <div class="mt-4" >
+        <el-input
+          v-model="input3"
+          style="max-width: 500px;float: left"
+          placeholder="请输入要搜索的内容"
+          class="input-with-select"
+          >
+          <template #prepend>
+            <el-select v-model="select" placeholder="选择" style="width: 115px">
+              <el-option label="工号" value="1" />
+              <el-option label="姓名" value="2" />
+            </el-select>
+          </template>
+          <template #append >
+            <el-button :icon="Search" @click="searchGroup(input3)" />
+          </template>
+        </el-input>
+      </div>
+      <div class="el-form-item__content" style="float: right;margin-right: 200px">
+          <el-button type="default" :icon="RefreshRight" @click="refreshData()">  
+              <span style="vertical-align: middle"> 重置 </span>
+          </el-button>   
+      </div>
+    </div>
+      <div style="height: 50px;">
+        <el-input 
+        type="file" 
+        @change="handleFileChange" 
+        style="width: 240px;"
+        accept=".xlsx,.xls" />
+        <el-button @click="submitFile" type="primary" :icon="Plus">
+          <span style="vertical-align: middle">导入教师信息</span>
+          </el-button>
+        <el-button @click="downloadTeacher" type="success" :icon="Download">
+          <span style="vertical-align: middle">下载导入老师样表</span>
+          </el-button>
+        <el-button @click="handleDelete()" type="danger" :icon="Delete">
+          <span style="vertical-align: middle">删除</span>
+          </el-button>
+      </div>
 
-                                </div>
-                            </i>
-                        </i>
-                        <span class="">重置</span>
-                    </button>
-                </div>
-            </div>
+          <el-table
+            ref="multipleTableRef"
+            :data="tableData"
+            style="width: 100%"
+            @selection-change="handleSelectionChange"
+            :row-key="row=>row.id"
+            :selection="selectedRows"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column property="account" label="工号" width="190" />
+            <el-table-column property="name" label="姓名" width="120" />
+            <el-table-column property="sex" label="性别" width="120" />
+            <el-table-column property="groupName" label="小组名称"  />
+            <el-table-column label="操作">
+            <template #default="{ row }">
+              <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.address,row.groupName,row.intro) " 
+              type="primary" plain size="small">修改</el-button>
+            </template>
+          </el-table-column>
+          </el-table>
+
+      <!-- 分页器部分 -->
+      <div class="demo-pagination-block" style="padding-left: 3%;padding-top: 1%;">
+        <span style="float: left;padding-right: 2%; padding-top: 5px;">总数:{{ total }}</span>
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :size="size"
+            :disabled="disabled"
+            :background="background"
+            layout="sizes, prev, pager, next"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
         </div>
-    </form>
-    <div class="mb-10px">
-      <button aria-disabled="false" type="button" class="el-button el-button--primary el-button--default v-button color-#fff" darker="false" style="--el-button-bg-color: #409eff; --el-button-text-color: #fff; --el-button-border-color: #409eff; --el-button-hover-bg-color: rgb(121, 187, 255); --el-button-hover-text-color: #fff; --el-button-hover-border-color: rgb(121, 187, 255); --el-button-active-bg-color: rgb(55, 130, 208); --el-button-active-border-color: rgb(55, 130, 208);">
-        <!--v-if-->
-        <span class="">新增</span>
-      </button>
-      <button aria-disabled="false" type="button" class="el-button el-button--danger el-button--default v-button color-#fff" darker="false">
-        <!--v-if-->
-        <span class="">删除</span>
-      </button>
+    <div>
     </div>
-    <div class="home">
-    <el-table :data="tableData()" style="width: 100%">
-      <el-table-column type="index" width="50" />
-      <el-table-column prop="date" label="日期" width="180" />
-      <el-table-column prop="name" label="名字" width="180" />
-      <el-table-column prop="address" label="地址" />
-    </el-table>
-    <div class="example-pagination-block">
-      <!-- <div class="example-demonstration">分页</div> -->
-      <el-pagination
-        background
-        layout="prev, pager, next ,total,sizes"
-        :total="total"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-      />
     </div>
-     </div>
-   </div>
-
-  </div>
-
 </template>
  
+<script lang="ts" setup>
+import { Search } from '@element-plus/icons-vue'
+import { Download  } from '@element-plus/icons-vue'
+import { RefreshRight } from '@element-plus/icons-vue'
+import { Plus } from '@element-plus/icons-vue'
+import { Delete } from '@element-plus/icons-vue'
+import {reactive, ref } from 'vue'
+import { ElTable, rowContextKey } from 'element-plus'
+import { getTea } from '@/api/admin.ts';
+import { del } from '@/api/admin.ts'
+import { ElMessage } from 'element-plus'
+import { uploadTea } from '@/api/admin.ts';
+interface User {
+  id:string
+  account: string
+  name: string
+  sex: string
+  groupName: string
+}
+const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+const multipleSelection = ref<User[]>([])
+const input3 = ref('');
+const currentPage = ref(1);
+const pageSize = ref(10);
+const total = ref(0); // 定义响应式总记录数变量
+const tableData = ref<any[]>([]); // 使用 ref 来使数据响应式
+const selectedRows = ref<any[]>([]); // 使用 ref 来使数据响应式
+
+const teachers=ref([]);
+// const teachersIds=ref([]);
+
+const select = ref('')
+const account=ref('');
+const nickname=ref('')
+const file = ref(null);
+const downloadTeacher=()=>{
+    // 创建一个隐藏的链接元素
+    const link = document.createElement('a');
+  
+  // 设置文件的 URL，假设模板文件存储在 public/templates/teacher_template.xlsx
+  link.href = '/templates/teacher-template.xlsx';
+  
+  // 设置下载的文件名
+  link.download = 'teacher-template.xlsx';
+  
+  // 触发点击事件，下载文件
+  link.click();
+}
+// 选择文件
+const handleFileChange = (event) => {
+  const selectedFile = event.target.files[0];
+  if (selectedFile) {
+    // 检查文件类型
+    const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+    if (allowedTypes.includes(selectedFile.type)) {
+      file.value = selectedFile;
+    } else {
+      alert('请选择有效的 Excel 文件。');
+      file.value = null;
+    }
+  }
+};
+// 上传文件
+const submitFile = async () => {
+  if (file.value) {
+    try {
+      await uploadTea(file.value);
+      alert('文件上传成功');
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      alert('文件上传失败');
+    }
+  } else {
+    alert('请先选择一个文件。');
+  }
+};
+const handleSelectionChange = (val: User[]) => {
+  multipleSelection.value = val
+}
+// 删除信息
+const handleDelete=async()=>{
+  const teachersIds=multipleSelection.value.map(row=>row.id);
+  if(teachersIds.length>0){
+    try{
+      const response=await del(teachersIds);
+      //重新加载页面
+      fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+    }catch(error){
+      ElMessage.error('删除失败');
+    }
+
+  }else{
+    ElMessage.warning('请首先选择要删除的项');
+  }
+  
+}
+// 从接口获取数据
+const fetchTeachers=async(account,nickname,pageNum,pageSize)=>{
+try{
+  const response=await getTea(account,nickname,pageNum,pageSize);
+  teachers.value=response.data;//根据接口返回的数据结构进行调整
+  total.value = response.data.total;
+  tableData.value=response.data.records.map((item)=>({
+    account:item.account,
+    name:item.nickname,
+    sex:item.sex,
+    groupName:item.groupName,
+    id:item.id
+  }));
+}catch(error){
+  console.error('Error fetching groups:',error);
+}
+}
+fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+// 分页器
+const handleSizeChange = (size: number) => {
+  pageSize.value = size;
+  fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+};
+
+const handleCurrentChange = (page: number) => {
+  currentPage.value = page;
+  fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+};
+
+// 判断信息搜索信息是否为空
+function isOnlySpaces(input) {  
+  // 创建正则表达式匹配任何非空格字符  
+  const regex = /^[\s]*$/;  
+  // 使用test方法检查输入是否符合正则表达式  
+  return regex.test(input);  
+}  
+
+// 搜索
+const searchGroup=(string)=>{
+  if(isOnlySpaces(string)==true){
+    ElMessage.error('搜索内容不能为空');
+  }else{
+    if(!select.value){
+    ElMessage.error('请选择搜索条件');
+    }else{
+      switch(select.value){
+        // 搜索工号
+        case'1':
+          account.value=input3.value;
+          fetchTeachers(account.value,'',currentPage.value, pageSize.value);
+          break;
+          // 搜索姓名
+        case'2':
+          nickname.value=input3.value;
+          fetchTeachers('',nickname.value,currentPage.value, pageSize.value);
+          break;
+        default:
+         ElMessage.error('选择了无效的选项');        
+      }
+    }
+  }
+}
+// 点击重置按钮
+const refreshData=()=>{
+  account.value=input3.value='';
+  nickname.value=input3.value=''
+  fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+}
+
+</script>
+
+<style>
+.input-with-select .el-input-group__prepend {
+  background-color: var(--el-fill-color-blank);
+}
+</style>

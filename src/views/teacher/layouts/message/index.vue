@@ -1,6 +1,5 @@
 <template>
-  <div class="meaasge">
-    <h3>消息</h3>
+  <div class="message">
     <!-- 待处理 -->
     <!-- 已完成 -->
     <!-- 批量操作 -->
@@ -14,7 +13,7 @@
       </div>
     </div>
     <div class="messageMain">
-      <el-scrollbar height="440px">
+      <el-scrollbar height="100%">
         <div class="messageIndex" v-for="index in 11">
           <div class="info">
             <p class="content">
@@ -30,6 +29,12 @@
 </template>
 <script setup lang="ts"></script>
 <style lang="scss" scoped>
+.message {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .oprate {
   display: flex;
   justify-content: space-between;
@@ -46,10 +51,12 @@
 }
 .messageMain {
   margin-top: 20px;
+  height: 100%;
+  overflow: hidden;
 }
 :deep(.el-scrollbar__view) {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 20px;
   padding-right: 20px;
 }
@@ -72,9 +79,13 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
+    height: 50px;
   }
 }
 .messageIndex:hover {
   box-shadow: 1px 2px 15px #ebebeb;
+}
+.el-scrollbar {
+  height: 100%;
 }
 </style>

@@ -1,5 +1,26 @@
 <template>
   <div style="padding: 1%;">
+    <div class="mt-4">
+      <el-input
+        v-model="input3"
+        style="max-width: 500px;float: left"
+        placeholder="请输入要搜索的小组名"
+        class="input-with-select"
+        >
+        <template #append >
+          <el-button :icon="Search" @click="searchGroup(input3)" />
+        </template>
+      </el-input>
+    </div>
+    <div class="el-form-item__content" style="float: right;margin-right: 200px">
+        <el-button type="default" :icon="RefreshRight" @click="refreshData()">  
+            <span style="vertical-align: middle"> 重置 </span>
+        </el-button>   
+    </div>
+
+    
+    <br>
+    <br>
 <div>
   switch parent border: <el-switch v-model="parentBorder" /> 
   switch child border: <el-switch v-model="childBorder" />
@@ -26,7 +47,7 @@
     <el-table-column label="小组位置" prop="address" />
     <el-table-column label="操作">
   <template #default="{ row }">
-    <el-button @click="handleLook(row.id) " type="success" plain size="small">查看学生</el-button>
+    <el-button @click="handleLook(row.id,row.name) " type="success" plain size="small">查看学生</el-button>
     <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.address,row.groupName,row.intro) " 
      type="primary" plain size="small">修改</el-button>
     <el-button @click="handleDelete(row.id)" type="danger" plain size="small">删除</el-button>
@@ -82,10 +103,15 @@
 </div>
 </template>
 <script lang="ts" setup>
+import { Search } from '@element-plus/icons-vue'
+import { RefreshRight } from '@element-plus/icons-vue'
 import {reactive, ref } from 'vue'
 import { getGroup } from '@/api/admin.ts';
 import { putGroup } from '@/api/admin.ts'
 import { ElNotification } from 'element-plus'
+import { useRouter } from 'vue-router' 
+import { ElMessage } from 'element-plus'
+const router = useRouter()  
 const parentBorder = ref(false)
 const childBorder = ref(false)
 const groups=ref([]);
@@ -96,6 +122,11 @@ const pageSize = ref(10);
 const total = ref(0); // 定义响应式总记录数变量
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
+const input3 = ref('');
+const handleLook=(id,name)=>{
+  router.push({name:'groupStudents',query:{id,name}})
+}
+
 var form = reactive({
     groupAddress:'',
     groupName:'',
@@ -104,9 +135,9 @@ var form = reactive({
   })
 
 // 从接口获取数据
-const fetchGroups=async(page:currentPage,pageSize:pageSize)=>{
+const fetchGroups=async(groupName,page,pageSize)=>{
 try{
-  const response=await getGroup('',page,pageSize,'');
+  const response=await getGroup(groupName,page,pageSize,'');
   groups.value=response.data;//根据接口返回的数据结构进行调整
   total.value = response.data.total;
   tableData.value=response.data.records.map((item:any)=>({
@@ -129,24 +160,22 @@ try{
   })
 )
   console.log('表格数据',tableData.value);
-  
-  
 }catch(error){
   console.error('Error fetching groups:',error);
 }
 }
   const handleSizeChange = (size: number) => {
   pageSize.value = size;
-  fetchGroups(currentPage.value, pageSize.value);
+  fetchGroups(input3.value,currentPage.value, pageSize.value);
 };
 
 const handleCurrentChange = (page: number) => {
   currentPage.value = page;
-  fetchGroups(currentPage.value, pageSize.value);
+  fetchGroups(input3.value,currentPage.value, pageSize.value);
 };
 
 // Initial fetch
-fetchGroups(currentPage.value, pageSize.value);
+fetchGroups(input3.value,currentPage.value, pageSize.value);
 // 获取信息
 const handleEdit = (id,address,groupName,intro) => {
   form = reactive({
@@ -171,12 +200,30 @@ const getupdateApi=(form)=>{
   }
   }
   groupData(form);
+  fetchGroups(input3.value,currentPage.value, pageSize.value);
 }
+// 判断信息搜索信息是否为空
+function isOnlySpaces(input) {  
+  // 创建正则表达式匹配任何非空格字符  
+  const regex = /^[\s]*$/;  
+  // 使用test方法检查输入是否符合正则表达式  
+  return regex.test(input);  
+}  
 
-
-
-
-
+// 搜索小组
+const searchGroup=(string)=>{
+  if(isOnlySpaces(string)==true){
+    ElMessage.error('搜索内容不能为空');
+  }else{
+    // 请求调用
+    fetchGroups(input3.value,currentPage.value, pageSize.value);
+  }
+}
+// 点击重置按钮
+const refreshData=()=>{
+  input3.value='';
+  fetchGroups('',currentPage.value, pageSize.value);
+}
 
 //删除
 const handleDelete = (id: string) => {
@@ -188,3 +235,8 @@ props:{
 } 
 
 </script>
+<style>
+.input-with-select .el-input-group__prepend {
+  background-color: var(--el-fill-color-blank);
+}
+</style>
