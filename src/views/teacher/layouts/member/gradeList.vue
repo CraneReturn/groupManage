@@ -62,18 +62,25 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import userTeacherMange from '@/views/teacher/api/userMange'
 interface User {
   date: string;
   name: string;
   address: string;
 }
+const {userPage,getAllUserMethods,userData} =userTeacherMange
 import type { ComponentSize } from "element-plus";
 const currentPage3 = ref(5);
 const pageSize3 = ref(100);
 const size = ref<ComponentSize>("default");
 const disabled = ref(false);
 
+onMounted(()=>{
+  getAllUserMethods()
+  console.log(userData,'11111');
+  
+})
 const handleSizeChange = (val: number) => {
   console.log(`${val} items per page`);
 };
