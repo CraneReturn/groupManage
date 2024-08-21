@@ -117,9 +117,12 @@ const tableData = [
 
 <style lang="scss" scoped>
 .leave {
-  width: 800px;
+  width: 1000px;
   margin: auto;
-  margin-top: 30px;
+  padding: 0 80px;
+  padding-top: 100px;
+  height: 100vh;
+  background-color: #fff;
   .leave-apply {
     .item {
       display: flex;
@@ -140,9 +143,9 @@ const tableData = [
   .leave-record {
     margin-top: 30px;
     .leave-page {
-        display: flex;
-        flex-direction: row-reverse;
-        margin-top: 15px;
+      display: flex;
+      flex-direction: row-reverse;
+      margin-top: 15px;
     }
   }
 }

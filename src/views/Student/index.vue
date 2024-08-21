@@ -10,18 +10,31 @@
           <span>学生</span>
         </div>
       </div>
-      <div class="user-info">
-        <p class="user-name">蛋黄派</p>
-        <div class="avater">
-          <img
-            src="https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
-            alt="头像"
-          />
+      <el-dropdown placement="bottom-start">
+        <div class="user-info">
+          <p class="user-name">蛋黄派</p>
+          <div class="avater">
+            <img
+              src="https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
+              alt="头像"
+            />
+          </div>
         </div>
-      </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <router-link to="userCenter">
+              <el-dropdown-item> 个人中心 </el-dropdown-item>
+            </router-link>
+            <router-link to="leave">
+              <el-dropdown-item> 请假 </el-dropdown-item>
+            </router-link>
+            <el-dropdown-item>退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
     <div class="student-main">
-        <router-view></router-view>
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -32,6 +45,7 @@
 .student {
   width: 100vw;
   height: 100vh;
+  background-color: #f4f6f9;
   .top-nav {
     background-color: #ececfa;
     height: 70px;
@@ -39,6 +53,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 1000;
+    position: fixed;
     padding: 0 5px;
     .groupAbout {
       display: flex;
@@ -81,6 +97,7 @@
   .user-info {
     display: flex;
     align-items: center;
+    outline: none;
     gap: 10px;
     .avater {
       width: 45px;
