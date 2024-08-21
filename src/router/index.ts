@@ -80,29 +80,6 @@ const router = createRouter({
       ],
     },
     {
-      path: "/student",
-      name: "student",
-      component: () => import("@/views/Student/index.vue"),
-      redirect: "/student/userCenter",
-      children: [
-        {
-          path: "groupList",
-          name: "groupList",
-          component: () => import("@/views/Student/groupList.vue"),
-        },
-        {
-          path: "leave",
-          name: "leave",
-          component: () => import("@/views/Student/leave.vue"),
-        },
-        {
-          path:"userCenter",
-          name:"userCenter",
-          component: () => import("@/views/Student/userCenter.vue"),
-        }
-      ],
-    },
-    {
       path: "/superAdmin",
       name: "superAdmin",
       component: () => import("@/views/superAdmin/index.vue"),
