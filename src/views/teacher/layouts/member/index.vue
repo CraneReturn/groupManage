@@ -75,35 +75,36 @@
     </div>
     <div class="title">
       <div class="searchMember">
-        <el-select v-model="value" placeholder="Select" style="width: 150px">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-            :disabled="item.disabled"
-          />
+        <el-select v-model="value" placeholder="按年级分类" style="width: 150px">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"
+            :disabled="item.disabled" />
         </el-select>
-        <el-input
-          v-model="input"
-          style="width: 240px"
-          placeholder="Please input"
-        />
+        <el-input v-model="input" style="width: 240px" placeholder="Please input" />
         <el-button type="primary">搜索</el-button>
       </div>
       <div class="addMember">
-        <el-button>添加成员</el-button>
-        <el-button>导入成员列表</el-button>
+        <el-button @click="userAddFlag=true">添加成员</el-button>
+        <el-button class="imporUserButton">
+          导入表格添加学生
+          <input type="file" @change="importDownLoaduser">
+        </el-button>
+        <el-button @click="lookDownloadUsetype">查看导入格式</el-button>
       </div>
     </div>
     <List />
+    <AddNewMember/>
   </div>
 </template>
 <script setup lang="ts">
 import List from "./gradeList.vue";
+import { getSample, uploadUserfile } from "@/api/teacher/userManger"
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useTransition } from "@vueuse/core";
 import * as echarts from "echarts";
+import AddNewMember from './addMember.vue'
+import { ElMessage, ElMessageBox } from "element-plus";
+import userTeacherMange from '@/views/teacher/api/userMange'
+const {userPage,getNewGrade,getAllUserMethods,alluserpage,userAddFlag,wholeStudentDataX,wholeStudentY} =userTeacherMange
 const source = ref(0);
 const outputValue = useTransition(source, {
   duration: 1500,
@@ -148,7 +149,72 @@ const initChart = () => {
     chart = echarts.init(current.value);
   }
 };
+const lookDownloadUsetype = (() => {
+  ElMessageBox.confirm(
+    '确定下载导入小组成员模板?',
+    {
+      confirmButtonText: '下载',
+      cancelButtonText: '取消',
+      type: 'info',
+      draggable: true,
+    }
+  )
+    .then(async () => {
+      const sampleData = await getSample()
+      const url = window.URL.createObjectURL(sampleData);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = '小组成员导入下载模板.xlsx'; // 文件名
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // 释放URL对象
+      window.URL.revokeObjectURL(url);
 
+    })
+    .catch(() => {
+
+    })
+})
+//导入
+const importDownLoaduser = (async (event) => {
+  const file = event.target.files[0]
+  if (!file) {
+    ElMessage({
+      message: '请您先上传文件',
+      type: 'error',
+    })
+    return;
+  }
+  const fileName = file.name;
+  const isTableFile = fileName.toLowerCase().endsWith('.xlsx') || fileName.toLowerCase().endsWith('.xls');
+
+  if (isTableFile) {
+    const fileData = await uploadUserfile(file)
+    if (fileData.code == 20000) {
+      ElMessage({
+        message: '上传文件导入成功',
+        type: 'success',
+
+      })
+      await getAllUserMethods()
+    } else {
+      ElMessage({
+        message: '上传文件导入失败',
+        type: 'error',
+
+      })
+    }
+
+  } else {
+    ElMessage({
+      message: '请上传表格文件',
+      type: 'error',
+    })
+  }
+
+})
 // 更新图表
 const updateChart = () => {
   const option = {
@@ -160,14 +226,14 @@ const updateChart = () => {
       data: ["人数"],
     },
     xAxis: {
-      data: ["2022", "2023", "2024", "2025", "2026", "2026"],
+      data:wholeStudentDataX.value ,
     },
     yAxis: {},
     series: [
       {
         name: "人数",
         type: "bar",
-        data: [5, 20, 36, 10, 10, 20],
+        data: wholeStudentY.value,
       },
     ],
   };
@@ -226,20 +292,25 @@ onMounted(() => {
 });
 
 // 在组件卸载前移除窗口调整监听器
-onBeforeUnmount(() => {
+onBeforeUnmount(async() => {
+  await getNewGrade()
+  
   window.removeEventListener("resize", handleResize);
 });
 </script>
 <style lang="scss" scoped>
 @import url("http://at.alicdn.com/t/c/font_4649268_8fqkq5k31so.css");
+
 .statistic {
   max-width: 85%;
   margin-top: 20px;
   background-color: var(--el-color-primary-light-9);
   border-radius: 5px;
+
   .el-col {
     text-align: center;
   }
+
   .el-statistic {
     --el-statistic-content-font-size: 20px;
   }
@@ -251,6 +322,7 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     gap: 10px;
+
     .iconfont {
       font-size: 25px;
     }
@@ -277,12 +349,14 @@ onBeforeUnmount(() => {
     margin-left: 4px;
   }
 }
+
 .memberManage {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
+
 .moreInfo {
   height: 80%;
   background-color: #ebebeb;
@@ -291,6 +365,7 @@ onBeforeUnmount(() => {
   width: 100%;
   display: flex;
   justify-content: space-between;
+
   .echarts {
     width: 55%;
     border-radius: 4px;
@@ -299,6 +374,7 @@ onBeforeUnmount(() => {
     margin-left: 0;
     padding: 10px;
   }
+
   .principalInfo {
     width: 40%;
     border-radius: 4px;
@@ -308,16 +384,31 @@ onBeforeUnmount(() => {
     padding: 10px;
   }
 }
+
 .title {
   display: flex;
   justify-content: space-between;
   height: 100px;
   padding: 20px 10px;
   align-items: center;
+
   .searchMember {
     display: flex;
     gap: 10px;
     align-items: center;
+  }
+}
+
+.imporUserButton {
+  position: relative;
+  input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 6;
+    width: 100%;
+    opacity: 0;
+    height: 100%
   }
 }
 </style>
