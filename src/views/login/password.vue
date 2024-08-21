@@ -17,12 +17,20 @@
       <a href="#">忘记密码</a>
     </div>
   </div>
-  <el-button type="primary">登录</el-button>
+  <el-button type="primary" @click="loginIt()">登录</el-button>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+import { userStore } from "@/stores";
+const store = userStore();
 let count = ref();
 let password = ref();
+const loginIt = () => {
+  console.log(111111111111);
+  store.Login(count.value, password.value).then((response) => {
+    console.log(response);
+  });
+};
 </script>
 <style lang="scss" scoped>
 .password {

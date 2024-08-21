@@ -30,7 +30,8 @@ const router = createRouter({
         {
           path: "info",
           name: "info",
-          component: () => import("@/views/teacher/layouts/groupInfo/index.vue"),
+          component: () =>
+            import("@/views/teacher/layouts/groupInfo/index.vue"),
         },
         {
           path: "person",
@@ -41,6 +42,12 @@ const router = createRouter({
           path: "attend",
           name: "attend",
           component: () => import("@/views/teacher/layouts/member/attend.vue"),
+        },
+        {
+          path: "messageInfo",
+          name: "messageInfo",
+          component: () =>
+            import("@/views/teacher/layouts/message/messageInfo.vue"),
         },
       ],
     },
@@ -73,43 +80,76 @@ const router = createRouter({
       ],
     },
     {
-      path: '/superAdmin',
-      name:'superAdmin',
-      component: () => import("@/views/superAdmin/index.vue"),
-      children:[
+      path: "/student",
+      name: "student",
+      component: () => import("@/views/Student/index.vue"),
+      redirect: "/student/userCenter",
+      children: [
         {
-          path:"allGroups",
-          name:'allGroups',
-          component: ()=>import('@/views/superAdmin/layouts/allGroupsAdmin/allGroupsAdmin.vue'),
+          path: "groupList",
+          name: "groupList",
+          component: () => import("@/views/Student/groupList.vue"),
         },
         {
-          path:"allTeachers",
-          name:'allTeachers',
-          component: ()=>import('@/views/superAdmin/layouts/allTeachersAdmin/allTeachersAdmin.vue'),
+          path: "leave",
+          name: "leave",
+          component: () => import("@/views/Student/leave.vue"),
         },
         {
-          path:"groupReview",
-          name:"groupReview",
-          component: ()=>import('@/views/superAdmin/layouts/groupReview/groupReview.vue'),
-
-        },
-        {
-          path:"repairReview",
-          name:"repairReview",
-          component: ()=>import('@/views/superAdmin/layouts/repairReview/repairReview.vue'),
-        },
-        {
-          path:'groupStudents',
-          name:'groupStudents',
-          component: ()=>import('@/views/superAdmin/layouts/allGroupsAdmin/components/groupStudents.vue')
+          path:"userCenter",
+          name:"userCenter",
+          component: () => import("@/views/Student/userCenter.vue"),
         }
-      ]
+      ],
     },
     {
-      path: '/analysis',
-      name: 'Analysis',
-      component: () => import('@/views/Dashboard/Analysis.vue'),
-    }
+      path: "/superAdmin",
+      name: "superAdmin",
+      component: () => import("@/views/superAdmin/index.vue"),
+      children: [
+        {
+          path: "allGroups",
+          name: "allGroups",
+          component: () =>
+            import(
+              "@/views/superAdmin/layouts/allGroupsAdmin/allGroupsAdmin.vue"
+            ),
+        },
+        {
+          path: "allTeachers",
+          name: "allTeachers",
+          component: () =>
+            import(
+              "@/views/superAdmin/layouts/allTeachersAdmin/allTeachersAdmin.vue"
+            ),
+        },
+        {
+          path: "groupReview",
+          name: "groupReview",
+          component: () =>
+            import("@/views/superAdmin/layouts/groupReview/groupReview.vue"),
+        },
+        {
+          path: "repairReview",
+          name: "repairReview",
+          component: () =>
+            import("@/views/superAdmin/layouts/repairReview/repairReview.vue"),
+        },
+        {
+          path: "groupStudents",
+          name: "groupStudents",
+          component: () =>
+            import(
+              "@/views/superAdmin/layouts/allGroupsAdmin/components/groupStudents.vue"
+            ),
+        },
+      ],
+    },
+    {
+      path: "/analysis",
+      name: "Analysis",
+      component: () => import("@/views/Dashboard/Analysis.vue"),
+    },
   ],
 });
 

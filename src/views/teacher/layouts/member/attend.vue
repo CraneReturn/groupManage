@@ -1,7 +1,7 @@
 <template>
   <div class="attend">
     <div class="searchMember">
-      <el-select v-model="value" placeholder="Select" style="width: 150px">
+      <el-select v-model="value" placeholder="成员年级" style="width: 150px">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -13,7 +13,7 @@
       <el-input
         v-model="input"
         style="width: 240px"
-        placeholder="Please input"
+        placeholder=""
       />
       <el-button type="primary">搜索</el-button>
     </div>
