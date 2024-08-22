@@ -184,6 +184,7 @@ const handleDelete=async()=>{
 const fetchTeachers=async(account,nickname,pageNum,pageSize)=>{
 try{
   const response=await getTea(account,nickname,pageNum,pageSize);
+  console.log(response);
   teachers.value=response.data;//根据接口返回的数据结构进行调整
   total.value = response.data.total;
   tableData.value=response.data.records.map((item)=>({

@@ -90,6 +90,13 @@ const router = createRouter({
       component: () => import("@/views/superAdmin/index.vue"),
       children: [
         {
+          path: "analysis",
+          name: "Analysis",
+          component: () => import(
+            "@/views/superAdmin/layouts/Dashboard/Analysis.vue"
+          ),
+        },
+        {
           path: "allGroups",
           name: "allGroups",
           component: () =>
@@ -112,6 +119,12 @@ const router = createRouter({
             import("@/views/superAdmin/layouts/groupReview/groupReview.vue"),
         },
         {
+          path: "outGroup",
+          name: "outGroup",
+          component: () =>
+            import("@/views/superAdmin/layouts/groupReview/outGroup.vue"),
+        },
+        {
           path: "repairReview",
           name: "repairReview",
           component: () =>
@@ -127,11 +140,7 @@ const router = createRouter({
         },
       ],
     },
-    {
-      path: "/analysis",
-      name: "Analysis",
-      component: () => import("@/views/Dashboard/Analysis.vue"),
-    },
+    
   ],
 });
 

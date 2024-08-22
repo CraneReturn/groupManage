@@ -17,8 +17,6 @@
             <span style="vertical-align: middle"> 重置 </span>
         </el-button>   
     </div>
-
-    
     <br>
     <br>
 <div>
@@ -120,6 +118,7 @@ const tableData = ref<any[]>([]); // 使用 ref 来使数据响应式
 const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(0); // 定义响应式总记录数变量
+const status=ref(1)
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const input3 = ref('');
@@ -135,9 +134,9 @@ var form = reactive({
   })
 
 // 从接口获取数据
-const fetchGroups=async(groupName,page,pageSize)=>{
+const fetchGroups=async(groupName,page,pageSize,status)=>{
 try{
-  const response=await getGroup(groupName,page,pageSize,'');
+  const response=await getGroup(groupName,page,pageSize,status);
   groups.value=response.data;//根据接口返回的数据结构进行调整
   total.value = response.data.total;
   tableData.value=response.data.records.map((item:any)=>({
@@ -166,16 +165,16 @@ try{
 }
   const handleSizeChange = (size: number) => {
   pageSize.value = size;
-  fetchGroups(input3.value,currentPage.value, pageSize.value);
+  fetchGroups(input3.value,currentPage.value, pageSize.value,status.value);
 };
 
 const handleCurrentChange = (page: number) => {
   currentPage.value = page;
-  fetchGroups(input3.value,currentPage.value, pageSize.value);
+  fetchGroups(input3.value,currentPage.value, pageSize.value,status.value);
 };
 
 // Initial fetch
-fetchGroups(input3.value,currentPage.value, pageSize.value);
+fetchGroups(input3.value,currentPage.value, pageSize.value,status.value);
 // 获取信息
 const handleEdit = (id,address,groupName,intro) => {
   form = reactive({
@@ -200,7 +199,7 @@ const getupdateApi=(form)=>{
   }
   }
   groupData(form);
-  fetchGroups(input3.value,currentPage.value, pageSize.value);
+  fetchGroups(input3.value,currentPage.value, pageSize.value,status.value);
 }
 // 判断信息搜索信息是否为空
 function isOnlySpaces(input) {  
@@ -216,13 +215,13 @@ const searchGroup=(string)=>{
     ElMessage.error('搜索内容不能为空');
   }else{
     // 请求调用
-    fetchGroups(input3.value,currentPage.value, pageSize.value);
+    fetchGroups(input3.value,currentPage.value, pageSize.value,status.value);
   }
 }
 // 点击重置按钮
 const refreshData=()=>{
   input3.value='';
-  fetchGroups('',currentPage.value, pageSize.value);
+  fetchGroups('',currentPage.value, pageSize.value,status.value);
 }
 
 //删除
