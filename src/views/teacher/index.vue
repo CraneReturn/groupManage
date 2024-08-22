@@ -21,16 +21,99 @@
           </div>
         </div>
         <div class="right">
-          <div class="userInfo">
-            <p class="userName">钟离</p>
+          <button
+            class="userInfo"
+            v-click-outside="onClickOutside"
+            ref="buttonRef"
+          >
             <div class="avater">
               <img
                 src="https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
                 alt="头像"
               />
             </div>
-          </div>
+          </button>
         </div>
+        <el-popover
+          ref="popoverRef"
+          :virtual-ref="buttonRef"
+          trigger="click"
+          virtual-triggering
+          width="250px"
+        >
+          <div class="moreUserInfo">
+            <!-- 用户信息 -->
+            <div class="teacherInfo">
+              <div class="avatar">
+                <img
+                  src="https://p26-passport.byteacctimg.com/img/user-avatar/3533833ef18f84075f3ecbded27d7a32~140x140.awebp"
+                  alt="logo"
+                />
+              </div>
+              <div class="info">
+                <p class="userName">
+                  <span v-if="!isEditingName">{{ userName }}</span>
+                  <el-input
+                    v-else
+                    v-model="userName"
+                    size="small"
+                    style="width: 125px"
+                    @blur="toggleEdit('name')"
+                  />
+                  <el-button
+                    class="edit"
+                    type="text"
+                    @click="toggleEdit('name')"
+                  >
+                    <i class="iconfont icon-bianji"></i>
+                  </el-button>
+                </p>
+                <el-tag size="small">指导教师</el-tag>
+              </div>
+            </div>
+            <div class="userLink">
+              <el-descriptions column="1">
+                <el-descriptions-item label="手机号">
+                  <span v-if="!isEditingPhone">{{ phone }}</span>
+                  <el-input
+                    v-else
+                    v-model="phone"
+                    size="small"
+                    style="width: 125px"
+                    @blur="toggleEdit('phone')"
+                  />
+                  <el-button
+                    class="edit"
+                    type="text"
+                    @click="toggleEdit('phone')"
+                  >
+                    <i class="iconfont icon-bianji"></i>
+                  </el-button>
+                </el-descriptions-item>
+                <el-descriptions-item label="邮箱">
+                  <span v-if="!isEditingEmail">{{ email }}</span>
+                  <el-input
+                    v-else
+                    v-model="email"
+                    size="small"
+                    style="width: 125px"
+                    @blur="toggleEdit('email')"
+                  />
+                  <el-button
+                    class="edit"
+                    type="text"
+                    @click="toggleEdit('email')"
+                  >
+                    <i class="iconfont icon-bianji"></i>
+                  </el-button>
+                </el-descriptions-item>
+              </el-descriptions>
+            </div>
+            <div class="footer">
+              <el-button type="text" size="small">退出登录</el-button>
+            </div>
+          </div>
+        </el-popover>
       </el-header>
       <el-container class="mainEqual">
         <el-aside :class="!isCollapse ? 'aside' : 'asideCollapse'">
@@ -40,7 +123,7 @@
             :collapse="isCollapse"
             background-color="#fff"
           >
-            <el-menu-item index="1">
+            <el-menu-item index="1" to="/teacher/message">
               <el-icon><Comment /></el-icon>
               <template #title
                 ><router-link to="/teacher/message">消息</router-link></template
@@ -56,10 +139,14 @@
                   >组织成员</router-link
                 ></el-menu-item
               >
+
               <el-menu-item index="2-2"
                 ><router-link to="/teacher/attend"
                   >组织考勤</router-link
                 ></el-menu-item
+              >
+              <el-menu-item index="2-3">
+                <router-link to="/teacher">退组成员</router-link></el-menu-item
               >
             </el-sub-menu>
             <el-menu-item index="3">
@@ -89,16 +176,59 @@
               <el-breadcrumb-item>promotion list</el-breadcrumb-item>
               <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
             </el-breadcrumb>
-            <RouterView />
+            <el-empty v-if="!groupId" description="暂无小组信息">
+              <el-button type="primary" @click="visible = true"
+                >申请小组</el-button
+              >
+            </el-empty>
+            <RouterView v-else />
           </div>
         </el-main>
       </el-container>
     </el-container>
   </div>
+  <el-dialog v-model="visible" title="申请小组" width="650" draggable>
+    <el-form :model="form">
+      <el-form-item label="小组名称">
+        <el-input
+          v-model="form.name"
+          autocomplete="off"
+          placeholder="小组名称"
+        />
+      </el-form-item>
+      <el-form-item label="小组地址">
+        <el-input
+          v-model="form.name"
+          autocomplete="off"
+          placeholder="小组地址"
+        />
+      </el-form-item>
+      <el-form-item label="小组介绍">
+        <el-input
+          resize="none"
+          v-model="form.intro"
+          :autosize="{ minRows: 6, maxRows: 8 }"
+          type="textarea"
+          show-word-limit="true"
+          maxlength="500"
+          placeholder="请输入小组介绍"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="visible = false">取消</el-button>
+        <el-button type="primary" @click="visible = false">
+          提交申请
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref, unref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
+import { userStore } from "@/stores";
 import {
   Comment,
   Management,
@@ -107,9 +237,54 @@ import {
   Fold,
   Setting,
 } from "@element-plus/icons-vue";
+import { ClickOutside as vClickOutside } from "element-plus";
+interface groupInfo {
+  logo?: File;
+  logoHref: string;
+  name: string;
+  intro: string;
+}
+const buttonRef = ref();
+const popoverRef = ref();
+const onClickOutside = () => {
+  unref(popoverRef).popperRef?.delayHide?.();
+};
+const form = reactive<groupInfo>({
+  logo: undefined,
+  logoHref: "",
+  name: "",
+  intro: "",
+});
+// 状态变量
+const visible = ref(false);
 const isCollapse = ref(false);
+const isEditingName = ref(false);
+const isEditingPhone = ref(false);
+const isEditingEmail = ref(false);
+const userName = ref("钟离");
+const phone = ref("18888888888");
+const email = ref("zhongli@example.com");
+
+// 切换编辑模式
+function toggleEdit(type: string) {
+  switch (type) {
+    case "name":
+      isEditingName.value = !isEditingName.value;
+      break;
+    case "phone":
+      isEditingPhone.value = !isEditingPhone.value;
+      break;
+    case "email":
+      isEditingEmail.value = !isEditingEmail.value;
+      break;
+  }
+}
+// 获取当前教师是否有小组
+const groupId = userStore().groupId;
+console.log(groupId);
 </script>
 <style lang="scss" scoped>
+@import url("http://at.alicdn.com/t/c/font_4649268_taducwspn3.css");
 .el-menu-item:hover {
   --el-menu-hover-bg-color: #dfe0e095;
 }
@@ -154,6 +329,9 @@ const isCollapse = ref(false);
       align-items: center;
     }
     .userInfo {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -240,5 +418,42 @@ const isCollapse = ref(false);
 a {
   color: #12181d;
   background-color: transparent;
+}
+.moreUserInfo {
+  .teacherInfo {
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .avatar {
+      width: 55px;
+      height: 55px;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+    }
+    .info {
+      .userName {
+        margin-bottom: 5px;
+      }
+    }
+  }
+  .userLink {
+    padding: 5px;
+    padding-bottom: 0;
+  }
+  .footer {
+    border-top: 1px solid #ebebeb;
+    display: flex;
+    justify-content: space-between;
+    .el-button--small {
+      margin-top: 5px;
+    }
+  }
+  .edit {
+    margin-left: 5px;
+  }
 }
 </style>

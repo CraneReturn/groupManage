@@ -26,10 +26,7 @@ const store = userStore();
 let count = ref();
 let password = ref();
 const loginIt = () => {
-  console.log(111111111111);
-  store.Login(count.value, password.value).then((response) => {
-    console.log(response);
-  });
+  store.Login(count.value, password.value);
 };
 </script>
 <style lang="scss" scoped>
