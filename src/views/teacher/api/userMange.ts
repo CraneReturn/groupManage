@@ -6,6 +6,7 @@ const userPage = ref<number>(1)
 let alluserpage = ref<number>()
 let alluserData = ref([])
 let gradeDataAll = ref([])
+
 //获取用户列表
 const getAllUserMethods = (async () => {
     const data = await getAllUser(userPage.value, 10)
@@ -14,21 +15,23 @@ const getAllUserMethods = (async () => {
     alluserData.value.push(...data.data.records)
 })
 const userAddFlag = ref<boolean>(false)
-const wholeStudentDataX=ref([])
-const wholeStudentY=ref([])
+const wholeStudentDataX = ref<any>([])
+const wholeStudentY = <any>ref([])
+//在校人员
+const stayStudent = ref([])
 const getNewGrade = (async () => {
     const gradeData = await getGrade()
     gradeDataAll.value = []
-    wholeStudentDataX.value=[]
-    wholeStudentY.value=[]
+    wholeStudentDataX.value = []
+    wholeStudentY.value = []
     if (gradeData.code == 20000 && gradeData.data.length != 0) {
-        const addValue: any[]=[]
-        const getWholeDatax: any[]=[]
-        const getWholeDatay=[]
+        const addValue: any[] = []
+        const getWholeDatax: any[] = []
+        const getWholeDatay: any[] = []
         gradeData.data.forEach(g => {
             getWholeDatax.push(g.grade)
             getWholeDatay.push(g.count)
-            return addValue.push({value:g.grade,label:g.grade})
+            addValue.push({ value: g.grade, label: g.grade })
         });
         gradeDataAll.value.push(...addValue)
         wholeStudentDataX.value.push(...getWholeDatax)
@@ -36,7 +39,7 @@ const getNewGrade = (async () => {
     } else {
         gradeDataAll.value = []
     }
-
+    return null
 })
 interface RuleForm {
     nickname: string
