@@ -60,7 +60,7 @@ const router = createRouter({
       path: "/student",
       name: "student",
       component: () => import("@/views/Student/index.vue"),
-      redirect: "/student/userCenter",
+      redirect: "/student/group",
       children: [
         {
           path: "groupList",
@@ -76,7 +76,12 @@ const router = createRouter({
           path:"userCenter",
           name:"userCenter",
           component: () => import("@/views/Student/userCenter.vue"),
-        }
+        },
+        {
+          path:"group",
+          name:"group",
+          component: () => import("@/views/Student/group.vue"),
+        },
       ],
     },
     {
