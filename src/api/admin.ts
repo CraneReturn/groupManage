@@ -2,35 +2,24 @@ import service from '@/util/request'
 import type { GroupUpdateDTO } from '@/types/GroupUpdateDTO'
 // 查看小组信息
 export function getGroup(groupName:any,pageNum:any,pageSize:any,status:any){
-    if(groupName==''&&status==''){
-        return service({
-            url:`/admin/getGroup?&pageNum=${pageNum}&pageSize=${pageSize}`,
-            method:"get",
-            headers: {
-                isToken: true,
-              },
-        })
+            if(groupName==''&&status!=''){
+                return service({
+                    url:`/admin/getGroup?pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
+                    method:"get",
+                    headers: {
+                        isToken: true,
+                      },
+                })
+            }else{
+                return service({
+                    url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
+                    method:"get",
+                    headers: {
+                        isToken: true,
+                      },
+                })
+            }
     }
-    else{
-        if(groupName!=''&&status==''){
-            return service({
-                url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}`,
-                method:"get",
-                headers: {
-                    isToken: true,
-                  },
-            })
-        }else{
-            return service({
-                url:`/admin/getGroup?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}&status=${status}`,
-                method:"get",
-                headers: {
-                    isToken: true,
-                  },
-            })
-        }
-    }
-}
 // 查看小组所有学生
 export function getGroupStu(groupId:any,pageNum:any,pageSize:any){
     return service({
@@ -129,12 +118,35 @@ export function del(ids:any){
     })
 }
 // 查看报修记录
-export function getRepair(){
+export function getRepair(groupName:any,pageNum:any,pageSize:any){
+    if(groupName==''){
+        return service({
+            url:`/admin/getRepair?pageNum=${pageNum}&pageSize=${pageSize}`,
+            method:"get",
+            headers: {
+                isToken: true,
+              },
+        })
+    }else{
+        return service({
+            url:`/admin/getRepair?groupName=${groupName}&pageNum=${pageNum}&pageSize=${pageSize}`,
+            method:"get",
+            headers: {
+                isToken: true,
+              },
+        })
+    }
+}
+
+// 审核小组申请
+export function auditGroup(groupId:any,reason:any,status:any){
     return service({
-        url:'/admin/getRepair',
-        method:"get",
+        url:`/admin/auditGroup?groupId=${groupId}&reason=${encodeURIComponent(reason)}&status=${status}`,
+        method:"put",
         headers: {
             isToken: true,
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
           },
     })
 }
