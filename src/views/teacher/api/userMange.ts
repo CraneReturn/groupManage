@@ -1,6 +1,6 @@
 import { getAllUser, getGrade } from "@/api/teacher/userManger"
 import { ElMessage } from "element-plus"
-import { reactive, ref } from "vue"
+import { reactive, ref, watch } from "vue"
 
 const userPage = ref<number>(1)
 let alluserpage = ref<number>()
@@ -41,6 +41,11 @@ const getNewGrade = (async () => {
     }
     return null
 })
+watch(userPage, (newValue, oldValue) => {
+   if(newValue!==oldValue){
+    getAllUserMethods()
+   }
+  });
 interface RuleForm {
     nickname: string
     grade: string
