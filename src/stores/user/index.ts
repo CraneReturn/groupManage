@@ -3,6 +3,7 @@ import { getToken, removeToken, setToken } from "../../util/auth";
 import { login, getGroupInfo, getUserInfo } from "@/api/login";
 import { jwtDecode } from "jwt-decode";
 import router from "@/router";
+import defultAvater from "@/assets/image/defult.webp";
 // 存储用户信息
 type user = {
   token: string;
@@ -42,10 +43,10 @@ const rolePaths: Record<UserType | string, string> = {
 export const userStore = defineStore("user", {
   state: (): user => {
     return {
-      token: "",
+      token: getToken() || "",
       userType: "",
       userName: "",
-      avatar: "",
+      avatar: defultAvater,
       email: "",
       phone: "",
       sex: "",
@@ -126,6 +127,7 @@ export const userStore = defineStore("user", {
       return new Promise(() => {
         this.token = "";
         removeToken();
+        router.push("/");
       });
     },
   },

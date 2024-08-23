@@ -23,3 +23,29 @@ export function getUserInfo() {
     method: "get",
   });
 }
+// 修改密码
+export function changeUserPassword(obj: object) {
+  let data = {
+    oldPassword: "",
+    newPassword: "",
+  };
+  data = { ...data, ...obj };
+  return service({
+    data: data,
+    url: `user/updatePassword`,
+    method: "put",
+  });
+}
+// 发送验证码
+export function sendCode(obj: object) {
+  let params = {
+    codeType: "",
+    email: "",
+  };
+  params = { ...params, ...obj };
+  return service({
+    params: params,
+    url: `user/sendCode`,
+    method: "get",
+  });
+}
