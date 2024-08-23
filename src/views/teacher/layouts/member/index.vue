@@ -65,7 +65,6 @@
         </el-col>
       </el-row>
     </div>
-
     <div class="moreInfo">
       <!-- 当前小组信息 -->
       <div class="principalInfo" ref="current"></div>
@@ -83,7 +82,7 @@
         <el-button type="primary">搜索</el-button>
       </div>
       <div class="addMember">
-        <el-button @click="userAddFlag=true">添加成员</el-button>
+        <el-button @click="userAddFlag = true">添加成员</el-button>
         <el-button class="imporUserButton">
           导入表格添加学生
           <input type="file" @change="importDownLoaduser">
@@ -92,19 +91,19 @@
       </div>
     </div>
     <List />
-    <AddNewMember/>
+    <AddNewMember />
   </div>
 </template>
 <script setup lang="ts">
 import List from "./gradeList.vue";
 import { getSample, uploadUserfile } from "@/api/teacher/userManger"
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, onBeforeMount, computed, watch } from "vue";
 import { useTransition } from "@vueuse/core";
 import * as echarts from "echarts";
 import AddNewMember from './addMember.vue'
 import { ElMessage, ElMessageBox } from "element-plus";
 import userTeacherMange from '@/views/teacher/api/userMange'
-const {userPage,getNewGrade,getAllUserMethods,alluserpage,userAddFlag,wholeStudentDataX,wholeStudentY} =userTeacherMange
+const { userPage, getNewGrade, getAllUserMethods, alluserpage, userAddFlag, wholeStudentDataX, wholeStudentY } = userTeacherMange
 const source = ref(0);
 const outputValue = useTransition(source, {
   duration: 1500,
@@ -142,6 +141,7 @@ let chartSum: echarts.ECharts | null = null;
 let chart: echarts.ECharts | null = null;
 // 初始化图表
 const initChart = () => {
+
   if (chartContainer.value) {
     chartSum = echarts.init(chartContainer.value);
   }
@@ -226,14 +226,14 @@ const updateChart = () => {
       data: ["人数"],
     },
     xAxis: {
-      data:wholeStudentDataX.value ,
+      data:wholeStudentDataX.value,
     },
     yAxis: {},
     series: [
       {
         name: "人数",
         type: "bar",
-        data: wholeStudentY.value,
+        data:wholeStudentY.value,
       },
     ],
   };
@@ -283,7 +283,12 @@ const handleResize = () => {
     chart.resize();
   }
 };
-
+watch(wholeStudentDataX, (newValue, oldValue) => {
+      initChart();
+      updateChart();
+    }, {
+      deep: true
+    });
 // 在组件挂载后初始化图表，并设置窗口调整监听器
 onMounted(() => {
   initChart();
@@ -291,12 +296,17 @@ onMounted(() => {
   window.addEventListener("resize", handleResize);
 });
 
+
 // 在组件卸载前移除窗口调整监听器
-onBeforeUnmount(async() => {
-  await getNewGrade()
-  
+onBeforeUnmount(() => {
+
   window.removeEventListener("resize", handleResize);
 });
+onBeforeMount(async () => {
+  await getNewGrade()
+
+  console.log(wholeStudentDataX, '3333');
+})
 </script>
 <style lang="scss" scoped>
 @import url("http://at.alicdn.com/t/c/font_4649268_8fqkq5k31so.css");
@@ -401,6 +411,7 @@ onBeforeUnmount(async() => {
 
 .imporUserButton {
   position: relative;
+
   input {
     position: absolute;
     left: 0;
