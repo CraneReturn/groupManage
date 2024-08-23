@@ -14,7 +14,7 @@
               <img :src="groupInfo.logo" alt="logo" v-if="!updateStatus" />
             </div>
             <div class="info">
-              <h1>未来软件工作室</h1>
+              <h1>{{groupInfo.groupName}}</h1>
               <span class="successColor">学生</span>
             </div>
           </div>
@@ -27,28 +27,38 @@
           <el-divider content-position="left"
             ><p class="divider">小组介绍</p></el-divider
           >
-          <p class="info" v-if="!updateStatus">{{ groupInfo.intro }}</p>
+          <p class="info" v-if="!updateStatus">{{ groupInfo.groupIntro }}</p>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-const groupInfo = {
-  name: "未来软件工作室",
-  intro: ` 未来软件工作室由高国红，李士勇两位老师于2011年6月创办，以提高学生软件开发技术为核心培养目标，秉承追求卓越，采取理论基础、实践能力与综合素质并重的人才培养理念，旨在全方位提高学生的就业质量和创新创业能力。
-          工作室成立以来，逐步形成了Web设计开发、大前端设计开发两大学习方向以及Java
-          Web、数据处理、移动开发、UI设计等若干细分方向，凝练了成熟的学习路线和培养方案。
-          一路走来我们成绩斐然，先后获得国家级创新创业项目5项，河南省创业扶持资金项目2项，校级创新创业项目8项，在各类学科竞赛中获国家级奖项12项，省级奖项91项，设计开发各类软件产品40余个，培养毕业生40余人，均就职于京东、联想、新浪等知名企业，平均就业年薪达20万元以上。
-          未来，做一个有影响力的团队，未来人，做一个有影响力的人。未来有你，未来可期。`,
-  address: "河南科技学院",
-  status: 1,
-  createTime: "2024-04-01",
-  logo: "https://portrait.gitee.com/uploads/avatars/namespace/564/1693077_wlgzs_1578990928.png!avatar100",
+import { ref, reactive, onMounted} from "vue";
+import { getOwnGroupInfo } from '@/api/student.ts';
+
+const groupInfo = ref({
+  groupName:"",
+  groupIntro:"",
+});
+const info = ref(groupInfo.groupIntro);
+const name = ref(groupInfo.groupName);
+
+// 定义一个获取组信息的函数
+const fetchGroupInfo = async () => {
+  try {
+    const response = await getOwnGroupInfo();  // 调用 API
+    groupInfo.value = response.data;           // 将数据存储到 groupInfo 中
+  } catch (error) {
+    console.error("获取组信息失败：", error);   // 错误处理
+  }
 };
-const info = ref(groupInfo.intro);
-const name = ref(groupInfo.name);
+
+// 在组件挂载时调用 API
+onMounted(() => {
+  fetchGroupInfo();
+});
+
 </script>
 <style lang="scss" scoped>
 .infoMax{

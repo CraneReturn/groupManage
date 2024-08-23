@@ -7,17 +7,17 @@
             <img src="@/assets/image/小组logo.png" alt="logo" />
           </div>
           <div class="info">
-            <h1>未来软件工作室</h1>
+            <h1>{{groupInfo.groupName}}</h1>
             <span>学生</span>
           </div>
         </div>
       </router-link>
       <el-dropdown placement="bottom-start">
         <div class="user-info">
-          <p class="user-name">蛋黄派</p>
+          <p class="user-name">{{userInfo.nickname}}</p>
           <div class="avater">
             <img
-              src="https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
+              :src="userInfo.avatar"
               alt="头像"
             />
           </div>
@@ -41,7 +41,47 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, reactive, onMounted} from "vue";
+import { getOwnGroupInfo,getOwnInfo } from '@/api/student.ts';
+
+const groupInfo = ref({
+  groupName:"",
+  groupIntro:"",
+  groupLogo:""
+});
+
+const userInfo = ref({
+  nickname:"",
+  avatar:""
+})
+
+// 定义一个获取组信息的函数
+const fetchGroupInfo = async () => {
+  try {
+    const response = await getOwnGroupInfo();  // 调用 API
+    groupInfo.value = response.data;           // 将数据存储到 groupInfo 中
+  } catch (error) {
+    console.error("获取组信息失败：", error);   // 错误处理
+  }
+};
+
+// 定义一个获取组信息的函数
+const fetchUserInfo = async () => {
+  try {
+    const response = await getOwnInfo();
+    userInfo.value = response.data;           
+  } catch (error) {
+    console.error("获取组信息失败：", error); 
+  }
+};
+
+// 在组件挂载时调用 API
+onMounted(() => {
+  fetchGroupInfo();
+  fetchUserInfo();
+});
+</script>
 
 <style lang="scss" scoped>
 .student {
