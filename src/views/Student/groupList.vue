@@ -78,12 +78,17 @@ const tableData = [
 </script>
 
 <style lang="scss" scoped>
+.groupMain{
+  width: 100%;
+  background-color: #fff;
+  height: 100vh;
+  padding-top: 100px;
+}
 .search {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
   .btn {
     display: inline-block;
     background: transparent;
@@ -134,7 +139,7 @@ const tableData = [
 .group-max {
   width: 1000px;
   margin: auto;
-  margin-top: 20px;
+  padding-top: 20px;
   .group-page {
     margin-top: 20px;
     display: flex;

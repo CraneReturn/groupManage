@@ -60,7 +60,7 @@ const router = createRouter({
       path: "/student",
       name: "student",
       component: () => import("@/views/Student/index.vue"),
-      redirect: "/student/userCenter",
+      redirect: "/student/group",
       children: [
         {
           path: "groupList",
@@ -76,7 +76,12 @@ const router = createRouter({
           path:"userCenter",
           name:"userCenter",
           component: () => import("@/views/Student/userCenter.vue"),
-        }
+        },
+        {
+          path:"group",
+          name:"group",
+          component: () => import("@/views/Student/group.vue"),
+        },
       ],
     },
     {
@@ -84,6 +89,13 @@ const router = createRouter({
       name: "superAdmin",
       component: () => import("@/views/superAdmin/index.vue"),
       children: [
+        {
+          path: "analysis",
+          name: "Analysis",
+          component: () => import(
+            "@/views/superAdmin/layouts/Dashboard/Analysis.vue"
+          ),
+        },
         {
           path: "allGroups",
           name: "allGroups",
@@ -107,6 +119,12 @@ const router = createRouter({
             import("@/views/superAdmin/layouts/groupReview/groupReview.vue"),
         },
         {
+          path: "outGroup",
+          name: "outGroup",
+          component: () =>
+            import("@/views/superAdmin/layouts/groupReview/outGroup.vue"),
+        },
+        {
           path: "repairReview",
           name: "repairReview",
           component: () =>
@@ -122,11 +140,7 @@ const router = createRouter({
         },
       ],
     },
-    {
-      path: "/analysis",
-      name: "Analysis",
-      component: () => import("@/views/Dashboard/Analysis.vue"),
-    },
+    
   ],
 });
 

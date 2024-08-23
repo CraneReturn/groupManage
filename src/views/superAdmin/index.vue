@@ -5,8 +5,12 @@
       <el-header class="header">
         <div class="left">
           <h1>小组管理系统</h1>
-          <div class="change"></div>
+          <div class="change" @click="isCollapse = !isCollapse">
+            <el-icon size="25px" v-if="!isCollapse"><Expand /></el-icon>
+            <el-icon size="25px" v-else><Fold /></el-icon>
+          </div>
         </div>
+
         <div class="right">
           <div class="userInfo">
             <p class="userName">钟离</p>
@@ -38,23 +42,50 @@
                 <span>管理员</span>
               </div>
             </div>
+            <router-link to="/superAdmin/analysis">
             <el-menu-item index="1">
               <el-icon><Comment /></el-icon>
-              <template #title>消息</template>
+              <template #title>控制台</template>
             </el-menu-item>
+          </router-link>
             <el-sub-menu index="2">
               <template #title>
                 <el-icon><UserFilled /></el-icon>
-                <span>成员管理</span>
+                <span>小组管理</span>
               </template>
-              <el-menu-item index="2-1">组织成员</el-menu-item>
-              <el-menu-item index="2-2">组织考勤</el-menu-item>
+              <router-link to="/superAdmin/allGroups">
+              <el-menu-item index="2-1">
+                现有小组
+              </el-menu-item>
+            </router-link>
+              <router-link to="/superAdmin/groupReview">
+              <el-menu-item index="2-2">
+                待审核小组
+              </el-menu-item>
+            </router-link>
+            <router-link to="/superAdmin/outGroup">
+              <el-menu-item index="2-3">
+                审核未通过小组
+              </el-menu-item>
+            </router-link>
             </el-sub-menu>
+            <router-link to="/superAdmin/allteachers">
             <el-menu-item index="3">
-              <el-icon><Management /></el-icon>
-              <template #title>信息管理</template>
+              <el-icon><Management /></el-icon>  
+              <template #title>
+                教师管理
+              </template>
             </el-menu-item>
-            <el-menu-item index="4" disabled>
+          </router-link>
+          <router-link to="/superAdmin/repairReview">
+            <el-menu-item index="4">
+              <el-icon><Management /></el-icon>  
+              <template #title>
+                报修审核
+              </template>
+            </el-menu-item>
+          </router-link>
+            <el-menu-item index="5" disabled>
               <el-icon><setting /></el-icon>
               <template #title>更多</template>
             </el-menu-item>

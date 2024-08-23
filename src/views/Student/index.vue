@@ -1,15 +1,17 @@
 <template>
   <div class="student">
     <div class="top-nav">
-      <div class="groupAbout">
-        <div class="logo">
-          <img src="@/assets/image/小组logo.png" alt="logo" />
+      <router-link to="group">
+        <div class="groupAbout">
+          <div class="logo">
+            <img src="@/assets/image/小组logo.png" alt="logo" />
+          </div>
+          <div class="info">
+            <h1>未来软件工作室</h1>
+            <span>学生</span>
+          </div>
         </div>
-        <div class="info">
-          <h1>未来软件工作室</h1>
-          <span>学生</span>
-        </div>
-      </div>
+      </router-link>
       <el-dropdown placement="bottom-start">
         <div class="user-info">
           <p class="user-name">蛋黄派</p>
@@ -43,9 +45,13 @@
 
 <style lang="scss" scoped>
 .student {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
   background-color: #f4f6f9;
+  a{
+    color: var(--color-text);
+  }
   .top-nav {
     background-color: #ececfa;
     height: 70px;
