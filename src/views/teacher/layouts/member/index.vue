@@ -9,7 +9,7 @@
               <i class="iconfont icon-zongshu"></i>
             </div>
             <div class="main">
-              <el-statistic :value="98500"></el-statistic>
+              <el-statistic :value="total"></el-statistic>
               <div class="statistic-footer">
                 <div class="footer-item">
                   <span>小组成员总数</span>
@@ -24,7 +24,7 @@
               <i class="iconfont icon-dangqian"></i>
             </div>
             <div class="main">
-              <el-statistic :value="98500"></el-statistic>
+              <el-statistic :value="currentNumber"></el-statistic>
               <div class="statistic-footer">
                 <div class="footer-item">
                   <span>目前在校人数</span>
@@ -74,18 +74,31 @@
     </div>
     <div class="title">
       <div class="searchMember">
-        <el-select v-model="value" placeholder="按年级分类" style="width: 150px">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"
-            :disabled="item.disabled" />
+        <el-select
+          v-model="value"
+          placeholder="按年级分类"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            :disabled="item.disabled"
+          />
         </el-select>
-        <el-input v-model="input" style="width: 240px" placeholder="Please input" />
+        <el-input
+          v-model="input"
+          style="width: 240px"
+          placeholder="Please input"
+        />
         <el-button type="primary">搜索</el-button>
       </div>
       <div class="addMember">
         <el-button @click="userAddFlag = true">添加成员</el-button>
         <el-button class="imporUserButton">
           导入表格添加学生
-          <input type="file" @change="importDownLoaduser">
+          <input type="file" @change="importDownLoaduser" />
         </el-button>
         <el-button @click="lookDownloadUsetype">查看导入格式</el-button>
       </div>
@@ -96,18 +109,43 @@
 </template>
 <script setup lang="ts">
 import List from "./gradeList.vue";
-import { getSample, uploadUserfile } from "@/api/teacher/userManger"
-import { ref, onMounted, onBeforeUnmount, onBeforeMount, computed, watch } from "vue";
+import { getSample, uploadUserfile } from "@/api/teacher/userManger";
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  onBeforeMount,
+  computed,
+  watch,
+  reactive,
+} from "vue";
 import { useTransition } from "@vueuse/core";
 import * as echarts from "echarts";
-import AddNewMember from './addMember.vue'
+import AddNewMember from "./addMember.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import userTeacherMange from '@/views/teacher/api/userMange'
-const { userPage, getNewGrade, getAllUserMethods, alluserpage, userAddFlag, wholeStudentDataX, wholeStudentY } = userTeacherMange
+import userTeacherMange from "@/views/teacher/api/userMange";
+const {
+  userPage,
+  getNewGrade,
+  getAllUserMethods,
+  alluserpage,
+  userAddFlag,
+  wholeStudentDataX,
+  wholeStudentY,
+} = userTeacherMange;
+const total = ref(wholeStudentY.value[wholeStudentY.value.length - 1]);
+let internalNumber = [...wholeStudentY.value]; // 创建原数组的副本
+internalNumber = internalNumber
+  .splice(0, 3)
+  .reduce((a: number, b: number) => a + b, 0);
+const currentNumber = ref(internalNumber);
 const source = ref(0);
-const outputValue = useTransition(source, {
-  duration: 1500,
-});
+console.log(wholeStudentY.value);
+
+interface DataObject {
+  name: string;
+  value: string | number;
+}
 source.value = 172000;
 const input = ref();
 const value = ref("");
@@ -139,9 +177,20 @@ const chartContainer = ref(null);
 const current = ref(null);
 let chartSum: echarts.ECharts | null = null;
 let chart: echarts.ECharts | null = null;
+
+let currentData = ref<DataObject[]>([]);
+
+const data: DataObject[] = wholeStudentDataX.value
+  .slice(0, 3)
+  .map((year: any, index: string | number) => ({
+    name: `${year}级`,
+    value: wholeStudentY.value[index] || "", // Default to empty string if no value
+  }));
+currentData.value = data;
+console.log(wholeStudentDataX.value, data, wholeStudentY.value);
+
 // 初始化图表
 const initChart = () => {
-
   if (chartContainer.value) {
     chartSum = echarts.init(chartContainer.value);
   }
@@ -149,72 +198,64 @@ const initChart = () => {
     chart = echarts.init(current.value);
   }
 };
-const lookDownloadUsetype = (() => {
-  ElMessageBox.confirm(
-    '确定下载导入小组成员模板?',
-    {
-      confirmButtonText: '下载',
-      cancelButtonText: '取消',
-      type: 'info',
-      draggable: true,
-    }
-  )
+const lookDownloadUsetype = () => {
+  ElMessageBox.confirm("确定下载导入小组成员模板?", {
+    confirmButtonText: "下载",
+    cancelButtonText: "取消",
+    type: "info",
+    draggable: true,
+  })
     .then(async () => {
-      const sampleData = await getSample()
+      const sampleData = await getSample();
       const url = window.URL.createObjectURL(sampleData);
-      const a = document.createElement('a');
-      a.style.display = 'none';
+      const a = document.createElement("a");
+      a.style.display = "none";
       a.href = url;
-      a.download = '小组成员导入下载模板.xlsx'; // 文件名
+      a.download = "小组成员导入下载模板.xlsx"; // 文件名
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       // 释放URL对象
       window.URL.revokeObjectURL(url);
-
     })
-    .catch(() => {
-
-    })
-})
+    .catch(() => {});
+};
 //导入
-const importDownLoaduser = (async (event: { target: { files: any[]; }; }) => {
-  const file = event.target.files[0]
+const importDownLoaduser = async (event: { target: { files: any[] } }) => {
+  const file = event.target.files[0];
   if (!file) {
     ElMessage({
-      message: '请您先上传文件',
-      type: 'error',
-    })
+      message: "请您先上传文件",
+      type: "error",
+    });
     return;
   }
   const fileName = file.name;
-  const isTableFile = fileName.toLowerCase().endsWith('.xlsx') || fileName.toLowerCase().endsWith('.xls');
+  const isTableFile =
+    fileName.toLowerCase().endsWith(".xlsx") ||
+    fileName.toLowerCase().endsWith(".xls");
 
   if (isTableFile) {
-    const fileData = await uploadUserfile(file)
+    const fileData = await uploadUserfile(file);
     if (fileData.code == 20000) {
       ElMessage({
-        message: '上传文件导入成功',
-        type: 'success',
-
-      })
-      await getAllUserMethods()
+        message: "上传文件导入成功",
+        type: "success",
+      });
+      await getAllUserMethods();
     } else {
       ElMessage({
-        message: '上传文件导入失败',
-        type: 'error',
-
-      })
+        message: "上传文件导入失败",
+        type: "error",
+      });
     }
-
   } else {
     ElMessage({
-      message: '请上传表格文件',
-      type: 'error',
-    })
+      message: "请上传表格文件",
+      type: "error",
+    });
   }
-
-})
+};
 // 更新图表
 const updateChart = () => {
   const option = {
@@ -226,14 +267,14 @@ const updateChart = () => {
       data: ["人数"],
     },
     xAxis: {
-      data:wholeStudentDataX.value,
+      data: wholeStudentDataX.value,
     },
     yAxis: {},
     series: [
       {
         name: "人数",
         type: "bar",
-        data:wholeStudentY.value,
+        data: wholeStudentY.value,
       },
     ],
   };
@@ -255,11 +296,7 @@ const updateChart = () => {
         name: "年级分布",
         type: "pie",
         radius: "50%",
-        data: [
-          { value: 335, name: "2022级" },
-          { value: 310, name: "2023级" },
-          { value: 234, name: "2024级" },
-        ],
+        data: currentData.value,
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
@@ -283,12 +320,16 @@ const handleResize = () => {
     chart.resize();
   }
 };
-watch(wholeStudentDataX, (newValue, oldValue) => {
-      initChart();
-      updateChart();
-    }, {
-      deep: true
-    });
+watch(
+  wholeStudentDataX,
+  (newValue, oldValue) => {
+    initChart();
+    updateChart();
+  },
+  {
+    deep: true,
+  }
+);
 // 在组件挂载后初始化图表，并设置窗口调整监听器
 onMounted(() => {
   initChart();
@@ -296,17 +337,15 @@ onMounted(() => {
   window.addEventListener("resize", handleResize);
 });
 
-
 // 在组件卸载前移除窗口调整监听器
 onBeforeUnmount(() => {
-
   window.removeEventListener("resize", handleResize);
 });
 onBeforeMount(async () => {
-  await getNewGrade()
+  await getNewGrade();
 
-  console.log(wholeStudentDataX, '3333');
-})
+  console.log(wholeStudentDataX, "3333");
+});
 </script>
 <style lang="scss" scoped>
 @import url("http://at.alicdn.com/t/c/font_4649268_8fqkq5k31so.css");
@@ -419,7 +458,7 @@ onBeforeMount(async () => {
     z-index: 6;
     width: 100%;
     opacity: 0;
-    height: 100%
+    height: 100%;
   }
 }
 </style>

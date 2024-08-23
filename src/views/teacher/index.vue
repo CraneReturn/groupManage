@@ -6,15 +6,17 @@
         <div class="left">
           <!-- 头部信息 -->
           <!-- 小组logo以及小组名称 -->
-          <div class="logoAbout" :class="isCollapse ? 'active' : 'passive'">
-            <div class="logo">
-              <img src="@/assets/image/小组logo.png" alt="logo" />
+          <router-link to="/teacher/info">
+            <div class="logoAbout" :class="isCollapse ? 'active' : 'passive'">
+              <div class="logo">
+                <img src="@/assets/image/小组logo.png" alt="logo" />
+              </div>
+              <div class="info">
+                <h1>未来软件工作室</h1>
+                <span>指导教师</span>
+              </div>
             </div>
-            <div class="info">
-              <h1>未来软件工作室</h1>
-              <span>指导教师</span>
-            </div>
-          </div>
+          </router-link>
           <div class="change" @click="isCollapse = !isCollapse">
             <el-icon size="25px" v-if="!isCollapse"><Expand /></el-icon>
             <el-icon size="25px" v-else><Fold /></el-icon>
@@ -26,11 +28,9 @@
             v-click-outside="onClickOutside"
             ref="buttonRef"
           >
+            <p class="userName">欢迎 {{ userName }}</p>
             <div class="avater">
-              <img
-                src="https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
-                alt="头像"
-              />
+              <img :src="avater" alt="头像" />
             </div>
           </button>
         </div>
@@ -39,11 +39,11 @@
           :virtual-ref="buttonRef"
           trigger="click"
           virtual-triggering
-          width="250px"
+          width="80px"
         >
           <div class="moreUserInfo">
             <!-- 用户信息 -->
-            <div class="teacherInfo">
+            <!-- <div class="teacherInfo">
               <div class="avatar">
                 <img
                   src="https://p26-passport.byteacctimg.com/img/user-avatar/3533833ef18f84075f3ecbded27d7a32~140x140.awebp"
@@ -70,8 +70,8 @@
                 </p>
                 <el-tag size="small">指导教师</el-tag>
               </div>
-            </div>
-            <div class="userLink">
+            </div> -->
+            <!-- <div class="userLink">
               <el-descriptions column="1">
                 <el-descriptions-item label="手机号">
                   <span v-if="!isEditingPhone">{{ phone }}</span>
@@ -108,9 +108,13 @@
                   </el-button>
                 </el-descriptions-item>
               </el-descriptions>
-            </div>
+            </div> -->
             <div class="footer">
-              <el-button type="text" size="small">退出登录</el-button>
+              <el-button size="small" @click="dialogFormVisible = true"
+                >修改密码</el-button
+              >
+              <b></b>
+              <el-button size="small" @click="loginOut">退出登录</el-button>
             </div>
           </div>
         </el-popover>
@@ -123,10 +127,10 @@
             :collapse="isCollapse"
             background-color="#fff"
           >
-            <router-link to="/teacher/message">
-              <el-menu-item index="1" to="/teacher/message">
-                <el-icon><Comment /></el-icon>
-                <template #title>消息</template>
+            <router-link to="/teacher/info">
+              <el-menu-item index="1">
+                <el-icon><Management /></el-icon>
+                <template #title>信息管理</template>
               </el-menu-item>
             </router-link>
 
@@ -146,10 +150,10 @@
                 <el-menu-item index="2-3"> 退组成员</el-menu-item>
               </router-link>
             </el-sub-menu>
-            <router-link to="/teacher/info">
-              <el-menu-item index="3">
-                <el-icon><Management /></el-icon>
-                <template #title>信息管理</template>
+            <router-link to="/teacher/message">
+              <el-menu-item index="3" disabled>
+                <el-icon><Comment /></el-icon>
+                <template #title>消息</template>
               </el-menu-item>
             </router-link>
             <el-menu-item index="4" disabled>
@@ -194,6 +198,32 @@
       </el-container>
     </el-container>
   </div>
+  <el-dialog v-model="dialogFormVisible" title="修改密码" width="400" draggable>
+    <el-form :model="password">
+      <el-form-item label="旧密码">
+        <el-input
+          v-model="password.oldPassword"
+          autocomplete="off"
+          show-password
+          placeholder="请输入旧密码"
+        />
+      </el-form-item>
+      <el-form-item label="新密码">
+        <el-input
+          v-model="password.newPassword"
+          autocomplete="off"
+          show-password
+          placeholder="请输入新密码"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="changePassword()"> 确定 </el-button>
+      </div>
+    </template>
+  </el-dialog>
   <el-dialog v-model="visible" title="申请小组" width="650" draggable>
     <el-form :model="form">
       <el-form-item label="小组名称">
@@ -235,6 +265,7 @@ import { computed, onMounted, reactive, ref, unref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import { userStore } from "@/stores";
 import { addGroup, getSchedule } from "@/api/teacher/group";
+import { changeUserPassword } from "@/api/login";
 import {
   Comment,
   Management,
@@ -251,6 +282,7 @@ interface groupInfo {
   groupAddress: string;
   groupIntro: string;
 }
+
 const buttonRef = ref();
 const popoverRef = ref();
 const onClickOutside = () => {
@@ -261,6 +293,10 @@ const form = reactive<groupInfo>({
   groupAddress: "",
   groupIntro: "",
 });
+const password = reactive({
+  oldPassword: "",
+  newPassword: "",
+});
 // 状态变量
 const visible = ref(false);
 const isCollapse = ref(false);
@@ -269,24 +305,26 @@ const isEditingPhone = ref(false);
 const isEditingEmail = ref(false);
 const apply = ref("");
 const refuse = ref("");
-const userName = ref("");
-const phone = ref("");
-const email = ref("");
+const dialogFormVisible = ref(false);
+const userName = ref(userStore().userName);
+const avater = ref(userStore().avatar);
+// const phone = ref("");
+// const email = ref("");
 
 // 切换编辑模式
-function toggleEdit(type: string) {
-  switch (type) {
-    case "name":
-      isEditingName.value = !isEditingName.value;
-      break;
-    case "phone":
-      isEditingPhone.value = !isEditingPhone.value;
-      break;
-    case "email":
-      isEditingEmail.value = !isEditingEmail.value;
-      break;
-  }
-}
+// function toggleEdit(type: string) {
+//   switch (type) {
+//     case "name":
+//       isEditingName.value = !isEditingName.value;
+//       break;
+//     case "phone":
+//       isEditingPhone.value = !isEditingPhone.value;
+//       break;
+//     case "email":
+//       isEditingEmail.value = !isEditingEmail.value;
+//       break;
+//   }
+// }
 const submitIt = () => {
   addGroup(form).then((response) => {
     ElMessage({
@@ -296,18 +334,37 @@ const submitIt = () => {
     });
   });
 };
+const changePassword = () => {
+  const passwordTest = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+  if (passwordTest.test(password.newPassword)) {
+    changeUserPassword(password).then((response) => {
+      if (!response.data) {
+        ElMessage({
+          message: "密码修改成功",
+          type: "success",
+          plain: true,
+        });
+        dialogFormVisible.value = false;
+      }
+    });
+  } else {
+    ElMessage({
+      message: "密码格式不正确：含英文大小写至少八位字符",
+      type: "error",
+      plain: true,
+    });
+  }
+};
 const route = useRoute();
 
 const breadcrumbItems = computed(() => {
-  const pathArray = route;
-
   const breadcrumbItems = [];
 
   let path = "";
 
   breadcrumbItems.push({
     name: route.name,
-    path:route.path,
+    path: route.path,
     to: path === "/" ? null : { path },
   });
 
@@ -337,6 +394,9 @@ console.log(groupId);
 onMounted(() => {
   schedule();
 });
+const loginOut = () => {
+  userStore().Logout();
+};
 </script>
 <style lang="scss" scoped>
 @import url("http://at.alicdn.com/t/c/font_4649268_taducwspn3.css");
@@ -377,7 +437,7 @@ onMounted(() => {
     background-color: #ececfa;
     padding: 0;
     --el-header-padding: 0;
-    padding-right: 20px;
+    padding-right: 50px;
     align-items: center;
     .left {
       display: flex;
@@ -389,7 +449,8 @@ onMounted(() => {
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 20px;
+
       .avater {
         width: 45px;
         height: 45px;
@@ -402,6 +463,7 @@ onMounted(() => {
       }
       .userName {
         font-size: 14px;
+        color: #9c9c9c;
       }
     }
   }
@@ -503,11 +565,16 @@ a {
     padding-bottom: 0;
   }
   .footer {
-    border-top: 1px solid #ebebeb;
+    // border-top: 1px solid #ebebeb;
     display: flex;
-    justify-content: space-between;
-    .el-button--small {
-      margin-top: 5px;
+    flex-direction: column;
+    align-items: center;
+    // justify-content: space-between;
+    .el-button {
+      margin: 0;
+      width: 100%;
+      height: 30px;
+      border: none /*  */;
     }
   }
   .edit {

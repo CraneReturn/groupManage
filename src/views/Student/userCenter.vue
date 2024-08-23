@@ -25,19 +25,19 @@
         <div class="info-content">
           <el-form :model="form" label-width="auto">
             <el-form-item label="昵称">
-              <el-input v-model="form.name" />
+              <el-input v-model="form.name" clearable />
             </el-form-item>
             <el-form-item label="学院">
-              <el-input v-model="form.college" />
+              <el-input v-model="form.college" clearable />
             </el-form-item>
             <el-form-item label="专业">
-              <el-input v-model="form.speciality" />
+              <el-input v-model="form.speciality" clearable />
             </el-form-item>
             <el-form-item label="班级">
-              <el-input v-model="form.ownClass" />
+              <el-input v-model="form.ownClass" clearable />
             </el-form-item>
             <el-form-item label="电话">
-              <el-input v-model="form.phone" />
+              <el-input v-model="form.phone" clearable />
             </el-form-item>
             <el-form-item label="性别">
               <el-radio-group v-model="form.sex">
