@@ -105,3 +105,26 @@ export function getLeavesAll(id:number){
     },
   });
 }
+//id查询
+export function getMessageLeavesByid(id:number){
+  return service({
+    url: `/head/getLeaveById?请假id=${id}`,
+    method: "get",
+    headers: {
+      isToken: true,
+    },
+  });
+}
+//转让负责人
+export function turnDute(id:number){
+  console.log(id);
+  debugger
+  
+  return service({
+    url: `/teacher/selectStudent?userId=${id}`,
+    method: "put",
+    headers: {
+      isToken: true,
+    },
+  });
+}

@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="oprateUser">
-        <el-button>转让负责人/更改为负责人</el-button>
+        <el-button @click="turnToDute(uid)">转让负责人/更改为负责人</el-button>
       </div>
     </div>
 
@@ -23,8 +23,7 @@
       <div class="personInfo">
         <el-descriptions title="成员个人档案" column="1">
           <el-descriptions-item label="成员姓名">{{ userMaindata.nickname }}</el-descriptions-item>
-          <el-descriptions-item label="班级"><el-tag size="small">{{ userMaindata.ownClass
-          }}</el-tag></el-descriptions-item>
+          <el-descriptions-item label="班级"><el-tag size="small">{{ userMaindata.ownClass}}</el-tag></el-descriptions-item>
           <el-descriptions-item label="学院"><span>{{ userMaindata.college }}</span></el-descriptions-item>
           <el-descriptions-item label="职位">{{ userMaindata.authority == 3 ? '小组负责人' : '普通成员' }}</el-descriptions-item>
           <el-descriptions-item label="性别">
@@ -42,28 +41,31 @@
       <div class="attendance">
         <h3>假勤</h3>
         <div class="attend">
-          <el-calendar 
-          @input ="handleDateClick"
-          :range="[new Date(previousMonday.prevYear, previousMonday.prevMonth, previousMonday.prevDay)
+          <el-calendar :range="[new Date(previousMonday.prevYear, previousMonday.prevMonth, previousMonday.prevDay)
             , new Date(nowMonday.nextYear, nowMonday.nextMonth, nowMonday.nextDay)]" :disabled-date="disabledDate">
             <template #date-cell="{ data }">
-            <div v-if="data.date!==previousMonday">
-                <div v-for="item in leaveStudent" class="floatMessageLeave">
-                  <div v-if="data.date.getMonth()+1==item.date.month
-                      && data.date.getFullYear()==item.date.year
-                      && data.date.getDate()==item.date.day
-                      "
-                      class="floatMessageLeavetag">
-                    <el-tag type="primary" size="small" v-if="
-                    data.date.getMonth()+1== thismothDate.month">
-             
+              <div v-if="data.date !== previousMonday" 
+              class="floatMessageLeaveWidth"
+              @click="getLeavesDeatil(leaveStudentreject(data.date.getFullYear(), data.date.getMonth() + 1, data.date.getDate()).ele.leaveId)">
+                <!-- <div @click="getLeavesDeatil(item.leaveId)" class="floatMessageLeave">
+
+                  <div class="floatMessageLeavetag">
+                    <el-tag type="primary" size="small" v-if="data.date.getMonth() + 1 == thismothDate.month">
+
                       <span>请假</span>
-                    
+
                     </el-tag>
-                  </div>
+                  </div> -->
+                  
+                  <div class="floatMessageLeave"  v-if="leaveStudentreject(data.date.getFullYear(), data.date.getMonth() + 1, data.date.getDate()).flag"> 
+                    <div class="floatMessageLeavetag">
+                      <el-tag type="primary" size="small">
+                        <span>请假</span>
+                      </el-tag>
+                    </div>
                 </div>
-    
-            </div>
+
+              </div>
               <p :class="data.isSelected ? 'is-selected' : ''">
                 {{ data.day.split('-').slice(1).join('-') }}
                 {{ data.isSelected ? '✔️' : '' }}
@@ -73,27 +75,30 @@
 
           <div class="attendInfo">
             <h3>请假信息</h3>
-            <el-scrollbar max-height="180px" noresize="true">
+            <el-scrollbar max-height="180px" noresize="true" v-if="!noneLeaves">
               <el-descriptions column="3">
                 <el-descriptions-item label="请假类型">
-                  <el-tag size="small">病假</el-tag>
+                  <el-tag size="small">{{ byIdLeavesData.leaveType }}</el-tag>
                 </el-descriptions-item>
-                <el-descriptions-item label="审批人">
-                  <span size="small">计科223李向阳</span>
-                </el-descriptions-item>
+                <!-- <el-descriptions-item label="审批人">
+                  <span size="small">{{ byIdLeavesData.approverId }}</span>
+                </el-descriptions-item> -->
                 <el-descriptions-item label="审批状态">
-                  <el-tag size="small">通过</el-tag>
+                  <el-tag size="small">{{ byIdLeavesData.status == 1 ? '已批准' : '已拒绝' }}</el-tag>
                 </el-descriptions-item>
               </el-descriptions>
               <el-descriptions column="1">
                 <el-descriptions-item label="请假时间">
-                  <el-tag size="small">2024-10-25 10：00</el-tag>-
-                  <el-tag size="small">2024-10-25 10：00
+                  <el-tag size="small">{{ byIdLeavesData.startDate }}</el-tag>-
+                  <el-tag size="small">{{ byIdLeavesData.endDate }}
                   </el-tag></el-descriptions-item>
                 <el-descriptions-item label="原因">
-                  <span class="reason">111111111111111111111</span></el-descriptions-item>
+                  <span class="reason">{{ byIdLeavesData.reason }}</span></el-descriptions-item>
               </el-descriptions>
             </el-scrollbar>
+            <p class="attendInfotext" v-if="noneLeaves">
+              暂无请假信息
+            </p>
           </div>
         </div>
       </div>
@@ -107,9 +112,11 @@ const today = current.getDay();
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router'
 import studentMain from '@/views/teacher/api/studentMain'
-const { userMaindataMethods, userMaindata, groupMaindataMethods, 
-  groupMaindata,leaveStudent,getStudentsAllLeave } = studentMain
+const { userMaindataMethods, userMaindata, groupMaindataMethods,
+  groupMaindata, leaveStudent, getStudentsAllLeave,updateDute,
+  byIDLeaves, byIdLeavesData, thisLeaveId } = studentMain
 const router = useRoute()
+const noneLeaves = ref(true)
 const data = ref(true)
 const uid = router.query.memberId
 const getLastDayOfMonth = () => {
@@ -140,12 +147,53 @@ onMounted(async () => {
   await groupMaindataMethods()
   const thismoth = getLastDayOfMonth()
   await getStudentsAllLeave(uid)
+  leaveDataReject()
   thismothDate.currentYear = thismoth.currentYear
   thismothDate.month = thismoth.month
   thismothDate.dateDay = thismoth.dateDay
   previousMonday.value = getPreviousMonday(thismothDate.currentYear, thismothDate.month, 1);
   nowMonday.value = getNextSunday(thismothDate.currentYear, thismothDate.month, thismothDate.dateDay + 1);
+})
+const leaveDataReject = (async () => {
+  if (thisLeaveId.value == -1) {
+    noneLeaves.value = true
+  } else {
+    noneLeaves.value = false
+    await byIDLeaves(thisLeaveId.value)
+  }
+})
+const getLeavesDeatil = async (leaveIdnow: any) => {
+  console.log(leaveIdnow==-1);
+  
+  if (leaveIdnow==-1 || !leaveIdnow) {
+    console.log('11111');
 
+    noneLeaves.value = true
+    return
+  } else {
+    await byIDLeaves(leaveIdnow)
+    noneLeaves.value = false
+  }
+}
+const turnToDute=(async(uid: any)=>{
+  await updateDute(uid)
+})
+//判断当前年月日是不是请假的
+const leaveStudentreject = ((year: any,month: any,day: any) => {
+  const dataNow={
+    flag:false,
+    ele:{
+      leaveId:-1
+    }
+  }
+  dataNow.flag=false
+  leaveStudent.value.forEach(element => {
+    if (element.date.month == month && element.date.year == year && element.date.day == day) {
+      dataNow.flag=true
+      dataNow.ele=element
+    } 
+  })
+  return dataNow
 })
 const getDaysInMonth = (year: number, month: number) => {
   if (month === 1) {
@@ -228,7 +276,7 @@ const disabledDate = (time: { getFullYear: () => number; getMonth: () => number;
   padding: 10px;
   border-radius: 5px;
   width: 70%;
-  overflow: scroll;
+  overflow-y: scroll;
 
   h3 {
     color: var(--el-text-color-primary);
@@ -347,35 +395,62 @@ const disabledDate = (time: { getFullYear: () => number; getMonth: () => number;
 .el-calendar__button-group {
   display: none !important;
 }
+
 ::v-deep .el-calendar__button-group {
   display: none;
 }
+
 ::v-deep .el-calendar-table:not(.is-range) td.next {
-  display: none!important;
+  display: none !important;
 }
 
 ::v-deep .el-calendar-table:not(.is-range) td.prev {
-  visibility: hidden !important;;
+  visibility: hidden !important;
+  ;
 }
-.el-calendar-table{
+
+.el-calendar-table {
   width: 100%;
   height: 100%;
-  &:not(.is-range){
-      td.next{
-          pointer-events: none;
-      }
-      td.prev{
-          pointer-events: none;
-      }
+
+  &:not(.is-range) {
+    td.next {
+      pointer-events: none;
+    }
+
+    td.prev {
+      pointer-events: none;
+    }
   }
 }
-.floatMessageLeave{
+
+.floatMessageLeave {
   position: relative;
   width: 100%;
   height: 100%;
 }
-.floatMessageLeavetag{
+
+.el-calendar-day {
+  position: relative;
+
+  .floatMessageLeaveWidth {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+  }
+}
+
+.floatMessageLeavetag {
   position: absolute;
-  bottom:20px;
+  top: 30px;
+  left: 5px;
+}
+
+.attendInfotext {
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 </style>
