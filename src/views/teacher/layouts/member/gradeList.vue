@@ -32,17 +32,17 @@
           <template #default="scope">
             <el-button
               size="small"
-              @click="handleEdit(scope.$index, scope.row)"
+              @click="gotoStudentMain(scope.row.id)"
             >
               详情
             </el-button>
-            <el-button
+            <!-- <el-button
               size="small"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
             >
               删除
-            </el-button>
+            </el-button> -->
           </template>
         </el-table-column>
       
@@ -56,7 +56,7 @@
           layout="prev, pager, next, jumper"
           :total="alluserpage"
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @current-change="getAllUserMethods"
         />
       </div>
     </div>
@@ -65,12 +65,14 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, reactive, ref } from "vue";
 import userTeacherMange from '@/views/teacher/api/userMange'
+import { useRouter } from 'vue-router'
+const {getAllUserMethods,alluserData,alluserpage,userPage}=userTeacherMange
 interface User {
   date: string;
   name: string;
   address: string;
 }
-const {userPage,getAllUserMethods,alluserpage,alluserData} =userTeacherMange
+const router=useRouter()
 import type { ComponentSize } from "element-plus";
 const currentPage3 = ref(5);
 const pageSize3 = ref(100);
@@ -78,49 +80,14 @@ const size = ref<ComponentSize>("default");
 const disabled = ref(false);
 let userAllData=reactive([])
 onBeforeMount(async()=>{
-  await getAllUserMethods()
-  console.log(alluserData,'hahahahah');
-  
-  // userAllData=data
-  // console.log(userAllData,'1111');
-  
-  
+  await getAllUserMethods()  
 })
-const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`);
-};
-const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`);
-};
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row);
-};
-const handleDelete = (index: number, row: User) => {
-  console.log(index, row);
-};
-
-const tableData: User[] = [
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-02",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-04",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-];
+const gotoStudentMain=((id:number)=>{
+  router.push({
+    path: '/teacher/person',
+    query: { memberId: id }
+  })
+})
 </script>
 <style lang="scss">
 .page {

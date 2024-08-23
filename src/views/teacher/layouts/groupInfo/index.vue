@@ -34,17 +34,18 @@
                 type="text"
               />
             </div>
-            <span :class="groupInfo.status ? 'checking' : 'successColor'">{{
+            <span class="successColor">审核通过</span>
+            <!-- <span :class="groupInfo.status ? 'checking' : 'successColor'">{{
               groupInfo.status ? "审核中..." : "审核通过"
-            }}</span>
+            }}</span> -->
           </div>
         </div>
-        <div class="oprate">
+        <!-- <div class="oprate">
           <el-button @click="submit" v-if="updateStatus"> 提交 </el-button>
           <el-button @click="update">{{
             updateStatus ? "取消更改" : "更改信息"
           }}</el-button>
-        </div>
+        </div> -->
       </div>
 
       <div class="groupInfo">

@@ -1,9 +1,10 @@
 <template>
   <div class="attend">
     <div class="searchMember">
+      
       <el-select v-model="value" placeholder="成员年级" style="width: 150px">
         <el-option
-          v-for="item in options"
+          v-for="item in gradeDataAll"
           :key="item.value"
           :label="item.label"
           :value="item.value"
@@ -13,20 +14,23 @@
       <el-input
         v-model="input"
         style="width: 240px"
-        placeholder=""
+        placeholder="按学号或者姓名搜索"
       />
       <el-button type="primary">搜索</el-button>
     </div>
+    {{leavesdata}}
     <div class="table">
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="leavesdata" style="width: 100%">
+        
         <el-table-column label="年级">
           <template #default="scope">
-            <el-tag>{{ scope.row.date }}</el-tag>
+            {{scope}}
+            <el-tag>{{ scope.row.grade }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="学号">
           <template #default="scope">
-            <span>{{ 20221524323 }}</span>
+            <span>{{ scope.row. account}}</span>
           </template>
         </el-table-column>
         <el-table-column label="姓名">
@@ -82,7 +86,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import userTeacherMange from '@/views/teacher/api/userMange'
+import leaveMange from '@/views/teacher/api/dailyManger'
+const {getNewGrade,gradeDataAll} =userTeacherMange
+const {getStudentLeave,leavesdata}=leaveMange
+onMounted(async()=>{
+  await getNewGrade()
+  await getStudentLeave()
+})
 interface User {
   date: string;
   name: string;
@@ -155,6 +167,7 @@ const options = [
     label: "Option5",
   },
 ];
+
 </script>
 <style lang="scss">
 .page {
