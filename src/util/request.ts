@@ -4,6 +4,7 @@ import { ElMessageBox, ElMessage, ElNotification } from "element-plus";
 import cache from "./cache";
 import { getToken } from "./auth";
 import { userStore } from "@/stores/index";
+import router from "@/router";
 const errorCode: { [key: string]: string } = {
   "401": "认证失败，无法访问系统资源",
   "403": "当前操作没有权限",
@@ -24,8 +25,9 @@ service.interceptors.request.use(
     const isToken = (config.headers || {}).isToken === false;
     //是否需要防止数据重复提交
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false;
-    if (getToken() && !isToken) {
-      config.headers["token"] = getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
+
+    if ((userStore().token || getToken()) && !isToken) {
+      config.headers["token"] = getToken() || userStore().token; // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     if (config.method === "get" && config.params) {
       let url = config.url + "?" + tansParams(config.params);
@@ -88,6 +90,8 @@ service.interceptors.response.use(
       return res.data;
     }
     if (code === 40100) {
+      console.log(1111);
+
       if (res.config.url === "user/login") {
         ElMessage({ message: msg, type: "error" });
         return Promise.reject(new Error(msg));
@@ -109,7 +113,7 @@ service.interceptors.response.use(
           })
           .then(() => {
             // 重新登录后的处理，比如跳转到首页
-            location.href = "/home";
+            router.push("/");
           })
           .catch(() => {
             isRelogin.show = false;

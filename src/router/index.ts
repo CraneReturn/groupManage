@@ -1,11 +1,11 @@
+import { userStore } from "@/stores";
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/login",
+      path: "/",
       name: "login",
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
@@ -14,47 +14,47 @@ const router = createRouter({
     },
     {
       path: "/teacher",
-      name: "teacher",
+      name: "教师",
       component: () => import("@/views/teacher/index.vue"),
       children: [
         {
           path: "message",
-          name: "message",
+          name: "消息",
           component: () => import("@/views/teacher/layouts/message/index.vue"),
         },
         {
           path: "member",
-          name: "member",
+          name: "人员管理",
           component: () => import("@/views/teacher/layouts/member/index.vue"),
         },
         {
           path: "info",
-          name: "info",
+          name: "小组信息",
           component: () =>
             import("@/views/teacher/layouts/groupInfo/index.vue"),
         },
         {
           path: "person",
-          name: "person",
+          name: "学生信息",
           component: () => import("@/views/teacher/person.vue"),
         },
         {
           path: "attend",
-          name: "attend",
+          name: "请假管理",
           component: () => import("@/views/teacher/layouts/member/attend.vue"),
         },
         {
           path: "messageInfo",
-          name: "messageInfo",
+          name: "信息详情",
           component: () =>
             import("@/views/teacher/layouts/message/messageInfo.vue"),
         },
+        {
+          path: "quit",
+          name: "退组管理",
+          component: () => import("@/views/teacher/layouts/member/leave.vue"),
+        },
       ],
-    },
-    {
-      path: "/",
-      name: "home",
-      component: HomeView,
     },
     {
       path: "/student",
@@ -73,8 +73,8 @@ const router = createRouter({
           component: () => import("@/views/Student/leave.vue"),
         },
         {
-          path:"userCenter",
-          name:"userCenter",
+          path: "userCenter",
+          name: "userCenter",
           component: () => import("@/views/Student/userCenter.vue"),
         },
         {
@@ -142,6 +142,48 @@ const router = createRouter({
     },
     
   ],
+});
+type UserType = "0" | "1" | "2" | "3";
+
+const rolePaths: Record<UserType, string> = {
+  "0": "/student",
+  "1": "/student",
+  "2": "/teacher",
+  "3": "/superAdmin",
+};
+
+router.beforeEach((to, from, next) => {
+  const store = userStore();
+  const loginStatus = store.token;
+  const userType = store.userType as UserType;
+
+  const authPages = ["/teacher", "/student", "/superAdmin"];
+
+  if (to.path === "/") {
+    if (loginStatus) {
+      const redirectPath = rolePaths[userType];
+      if (redirectPath) {
+        next({ path: redirectPath });
+      } else {
+        next({ path: "/" });
+      }
+    } else {
+      next();
+    }
+  } else if (authPages.some((page) => to.path.startsWith(page))) {
+    if (loginStatus) {
+      const allowedPath = rolePaths[userType];
+      if (allowedPath && to.path.startsWith(allowedPath)) {
+        next();
+      } else {
+        next({ path: allowedPath || "/" });
+      }
+    } else {
+      next({ path: "/" });
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

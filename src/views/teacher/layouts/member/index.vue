@@ -178,7 +178,7 @@ const lookDownloadUsetype = (() => {
     })
 })
 //导入
-const importDownLoaduser = (async (event) => {
+const importDownLoaduser = (async (event: { target: { files: any[]; }; }) => {
   const file = event.target.files[0]
   if (!file) {
     ElMessage({
