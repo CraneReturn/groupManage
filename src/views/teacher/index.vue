@@ -123,40 +123,35 @@
             :collapse="isCollapse"
             background-color="#fff"
           >
-            <el-menu-item index="1" to="/teacher/message">
-              <el-icon><Comment /></el-icon>
-              <template #title
-                ><router-link to="/teacher/message">消息</router-link></template
-              >
-            </el-menu-item>
+            <router-link to="/teacher/message">
+              <el-menu-item index="1" to="/teacher/message">
+                <el-icon><Comment /></el-icon>
+                <template #title>消息</template>
+              </el-menu-item>
+            </router-link>
+
             <el-sub-menu index="2">
               <template #title>
                 <el-icon><UserFilled /></el-icon>
                 <span>成员管理</span>
               </template>
-              <el-menu-item index="2-1">
-                <router-link to="/teacher/member"
-                  >组织成员</router-link
-                ></el-menu-item
-              >
 
-              <el-menu-item index="2-2"
-                ><router-link to="/teacher/attend"
-                  >组织考勤</router-link
-                ></el-menu-item
-              >
-              <el-menu-item index="2-3">
-                <router-link to="/teacher">退组成员</router-link></el-menu-item
-              >
+              <router-link to="/teacher/member">
+                <el-menu-item index="2-1"> 组织成员</el-menu-item>
+              </router-link>
+              <router-link to="/teacher/attend">
+                <el-menu-item index="2-2">组织考勤</el-menu-item>
+              </router-link>
+              <router-link to="/teacher/quit">
+                <el-menu-item index="2-3"> 退组成员</el-menu-item>
+              </router-link>
             </el-sub-menu>
-            <el-menu-item index="3">
-              <el-icon><Management /></el-icon>
-              <template #title
-                ><router-link to="/teacher/info"
-                  >信息管理</router-link
-                ></template
-              >
-            </el-menu-item>
+            <router-link to="/teacher/info">
+              <el-menu-item index="3">
+                <el-icon><Management /></el-icon>
+                <template #title>信息管理</template>
+              </el-menu-item>
+            </router-link>
             <el-menu-item index="4" disabled>
               <el-icon><setting /></el-icon>
               <template #title>更多</template>
@@ -167,19 +162,31 @@
         <el-main>
           <div class="mainTable">
             <el-breadcrumb separator="/">
-              <el-breadcrumb-item :to="{ path: '/' }"
-                >homepage</el-breadcrumb-item
+              <el-breadcrumb-item
+                v-for="(item, index) in breadcrumbItems"
+                :key="index"
+                :to="item.path"
               >
-              <el-breadcrumb-item>
-                <a href="/">promotion management</a>
+                <template v-if="item.to">
+                  <router-link :to="item.to">{{ item.name }}</router-link>
+                </template>
+                <template v-else>
+                  {{ item.name }}
+                </template>
               </el-breadcrumb-item>
-              <el-breadcrumb-item>promotion list</el-breadcrumb-item>
-              <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
             </el-breadcrumb>
             <el-empty v-if="!groupId" description="暂无小组信息">
-              <el-button type="primary" @click="visible = true"
+              <p
+                v-if="refuse"
+                class="applyTag"
+                style="color: rgb(245 63 63 / 47%)"
+              >
+                {{ refuse }}
+              </p>
+              <el-button type="primary" @click="visible = true" v-if="!apply"
                 >申请小组</el-button
               >
+              <p v-else-if="!refuse" class="applyTag">{{ apply }}</p>
             </el-empty>
             <RouterView v-else />
           </div>
@@ -191,14 +198,14 @@
     <el-form :model="form">
       <el-form-item label="小组名称">
         <el-input
-          v-model="form.name"
+          v-model="form.groupName"
           autocomplete="off"
           placeholder="小组名称"
         />
       </el-form-item>
       <el-form-item label="小组地址">
         <el-input
-          v-model="form.name"
+          v-model="form.groupAddress"
           autocomplete="off"
           placeholder="小组地址"
         />
@@ -206,7 +213,7 @@
       <el-form-item label="小组介绍">
         <el-input
           resize="none"
-          v-model="form.intro"
+          v-model="form.groupIntro"
           :autosize="{ minRows: 6, maxRows: 8 }"
           type="textarea"
           show-word-limit="true"
@@ -218,17 +225,16 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="visible = false">
-          提交申请
-        </el-button>
+        <el-button type="primary" @click="submitIt"> 提交申请 </el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 <script setup lang="ts">
-import { reactive, ref, unref } from "vue";
-import { RouterLink, RouterView } from "vue-router";
+import { computed, onMounted, reactive, ref, unref } from "vue";
+import { RouterLink, RouterView, useRoute } from "vue-router";
 import { userStore } from "@/stores";
+import { addGroup, getSchedule } from "@/api/teacher/group";
 import {
   Comment,
   Management,
@@ -237,12 +243,13 @@ import {
   Fold,
   Setting,
 } from "@element-plus/icons-vue";
-import { ClickOutside as vClickOutside } from "element-plus";
+import { ElMessage, ClickOutside as vClickOutside } from "element-plus";
 interface groupInfo {
   logo?: File;
-  logoHref: string;
-  name: string;
-  intro: string;
+  logoHref?: string;
+  groupName: string;
+  groupAddress: string;
+  groupIntro: string;
 }
 const buttonRef = ref();
 const popoverRef = ref();
@@ -250,10 +257,9 @@ const onClickOutside = () => {
   unref(popoverRef).popperRef?.delayHide?.();
 };
 const form = reactive<groupInfo>({
-  logo: undefined,
-  logoHref: "",
-  name: "",
-  intro: "",
+  groupName: "",
+  groupAddress: "",
+  groupIntro: "",
 });
 // 状态变量
 const visible = ref(false);
@@ -261,9 +267,11 @@ const isCollapse = ref(false);
 const isEditingName = ref(false);
 const isEditingPhone = ref(false);
 const isEditingEmail = ref(false);
-const userName = ref("钟离");
-const phone = ref("18888888888");
-const email = ref("zhongli@example.com");
+const apply = ref("");
+const refuse = ref("");
+const userName = ref("");
+const phone = ref("");
+const email = ref("");
 
 // 切换编辑模式
 function toggleEdit(type: string) {
@@ -279,9 +287,56 @@ function toggleEdit(type: string) {
       break;
   }
 }
+const submitIt = () => {
+  addGroup(form).then((response) => {
+    ElMessage({
+      message: "申请成功，等待管理员审核中...",
+      type: "warning",
+      plain: true,
+    });
+  });
+};
+const route = useRoute();
+
+const breadcrumbItems = computed(() => {
+  const pathArray = route;
+
+  const breadcrumbItems = [];
+
+  let path = "";
+
+  breadcrumbItems.push({
+    name: route.name,
+    path:route.path,
+    to: path === "/" ? null : { path },
+  });
+
+  return [{ name: "教师", path: "/teacher" }, ...breadcrumbItems];
+});
 // 获取当前教师是否有小组
-const groupId = userStore().groupId;
+// 查看小组申请进度
+const schedule = () => {
+  getSchedule().then((response) => {
+    switch (response.data.status) {
+      case 0:
+        // 审核中...
+        apply.value = "审核中...";
+        break;
+      case 2:
+        // 拒绝
+        refuse.value = `已被拒绝:${response.data.groupRefusedReason}`;
+        break;
+
+      default:
+        break;
+    }
+  });
+};
+const groupId = userStore().groupData.groupId;
 console.log(groupId);
+onMounted(() => {
+  schedule();
+});
 </script>
 <style lang="scss" scoped>
 @import url("http://at.alicdn.com/t/c/font_4649268_taducwspn3.css");
@@ -419,6 +474,9 @@ a {
   color: #12181d;
   background-color: transparent;
 }
+:deep(.el-popper.is-dark::before) {
+  background: #fff;
+}
 .moreUserInfo {
   .teacherInfo {
     padding: 5px;
@@ -455,5 +513,12 @@ a {
   .edit {
     margin-left: 5px;
   }
+}
+:deep(.el-empty__bottom) {
+  margin-top: 0;
+}
+.applyTag {
+  color: #e2aa53;
+  font-size: 14px;
 }
 </style>

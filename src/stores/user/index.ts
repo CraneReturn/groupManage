@@ -6,7 +6,7 @@ import router from "@/router";
 // 存储用户信息
 type user = {
   token: string;
-  userType: string;
+  userType: UserType | string;
   userName: string;
   avatar: string;
   email: string;
@@ -16,20 +16,33 @@ type user = {
   ownClass: string;
   speciality: string;
   account: string;
-  groupId: number;
+  groupData: group;
 };
-
+interface group {
+  groupId: number;
+  groupName: string;
+  groupAddress: string;
+  groupIntro: string;
+  status?: number;
+}
 interface userRight {
-  exp: number;
+  exp?: number;
   role: string;
   userId: string;
   username: string;
 }
+type UserType = "0" | "1" | "2" | "3";
 
+const rolePaths: Record<UserType | string, string> = {
+  "0": "/student",
+  "1": "/student",
+  "2": "/teacher",
+  "3": "/superAdmin",
+};
 export const userStore = defineStore("user", {
   state: (): user => {
     return {
-      token: getToken(),
+      token: "",
       userType: "",
       userName: "",
       avatar: "",
@@ -40,7 +53,12 @@ export const userStore = defineStore("user", {
       ownClass: "",
       speciality: "",
       account: "",
-      groupId: 0,
+      groupData: {
+        groupId: 0,
+        groupName: "",
+        groupAddress: "",
+        groupIntro: "",
+      },
     };
   },
   actions: {
@@ -49,6 +67,7 @@ export const userStore = defineStore("user", {
       return new Promise(() => {
         login(account, password).then((response) => {
           if (response) {
+            console.log(response);
             setToken(response.data);
             this.token = response.data;
             const userInfo: userRight = jwtDecode(response.data);
@@ -56,9 +75,9 @@ export const userStore = defineStore("user", {
             // 获取用户信息
             this.UserInfo();
             this.GroupInfo();
-
-            if (this.userType === "2") {
-              router.push("/teacher");
+            if (this.userType) {
+              const pushPath = rolePaths[this.userType];
+              router.push(pushPath);
             }
           }
         });
@@ -68,8 +87,11 @@ export const userStore = defineStore("user", {
     GroupInfo() {
       return new Promise(() => {
         getGroupInfo().then((response) => {
-          if (response) {
-            console.log(response);
+          if (response.data) {
+            this.groupData.groupAddress = response.data.groupAddress;
+            this.groupData.groupName = response.data.groupName;
+            this.groupData.groupIntro = response.data.groupIntro;
+            this.groupData.groupId = response.data.groupId;
           }
         });
       });
