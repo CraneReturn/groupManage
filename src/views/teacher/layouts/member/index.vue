@@ -66,34 +66,11 @@
       </el-row>
     </div>
     <div class="moreInfo">
-      <!-- 当前小组信息 -->
       <div class="principalInfo" ref="current"></div>
       <div class="echarts" ref="chartContainer">
-        <!-- echarts展示当前人数分布 -->
       </div>
     </div>
     <div class="title">
-      <div class="searchMember">
-        <el-select
-          v-model="value"
-          placeholder="按年级分类"
-          style="width: 150px"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-            :disabled="item.disabled"
-          />
-        </el-select>
-        <el-input
-          v-model="input"
-          style="width: 240px"
-          placeholder="Please input"
-        />
-        <el-button type="primary">搜索</el-button>
-      </div>
       <div class="addMember">
         <el-button @click="userAddFlag = true">添加成员</el-button>
         <el-button class="imporUserButton">

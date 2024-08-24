@@ -36,13 +36,6 @@
             >
               详情
             </el-button>
-            <!-- <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-            >
-              删除
-            </el-button> -->
           </template>
         </el-table-column>
       
@@ -55,7 +48,6 @@
           :disabled="disabled"
           layout="prev, pager, next, jumper"
           :total="alluserpage"
-          @size-change="handleSizeChange"
           @current-change="getAllUserMethods"
         />
       </div>
