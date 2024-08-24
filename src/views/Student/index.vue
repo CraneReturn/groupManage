@@ -56,7 +56,6 @@ const userInfo = ref({
   avatar:""
 })
 
-// 定义一个获取组信息的函数
 const fetchGroupInfo = async () => {
   try {
     const response = await getOwnGroupInfo();  // 调用 API
@@ -66,7 +65,6 @@ const fetchGroupInfo = async () => {
   }
 };
 
-// 定义一个获取组信息的函数
 const fetchUserInfo = async () => {
   try {
     const response = await getOwnInfo();
