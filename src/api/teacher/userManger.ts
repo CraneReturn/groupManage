@@ -128,3 +128,30 @@ export function turnDute(id:number){
     },
   });
 }
+export function searchLeavesSend(nickname:string,page:number,size:number){  
+  return service({
+    url: `/head/getLeaves?nickname=${nickname}&page=${page}&size=${size}`,
+    method: "get",
+    headers: {
+      isToken: true,
+    },
+  });
+}
+export function allLeavesSend(page:number,size:number){  
+  return service({
+    url: `/head/getLeaves?page=${page}&size=${size}`,
+    method: "get",
+    headers: {
+      isToken: true,
+    },
+  });
+}
+export function getUserMessageSend(id:number){  
+  return service({
+    url: `/head/getUserById?id=${id}`,
+    method: "get",
+    headers: {
+      isToken: true,
+    },
+  });
+}

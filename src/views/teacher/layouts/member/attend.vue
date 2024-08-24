@@ -1,8 +1,7 @@
 <template>
   <div class="attend">
     <div class="searchMember">
-      
-      <el-select v-model="value" placeholder="成员年级" style="width: 150px">
+      <!-- <el-select v-model="value" placeholder="成员年级" style="width: 150px">
         <el-option
           v-for="item in gradeDataAll"
           :key="item.value"
@@ -10,76 +9,67 @@
           :value="item.value"
           :disabled="item.disabled"
         />
-      </el-select>
+      </el-select> -->
       <el-input
-        v-model="input"
+        v-model="sendNickName"
         style="width: 240px"
-        placeholder="按学号或者姓名搜索"
+        placeholder="按姓名搜索"
       />
-      <el-button type="primary">搜索</el-button>
+      <el-button type="primary" @click="searchLeaves">搜索</el-button>
+      <el-button type="default" @click="getNewAllData">重置</el-button>
     </div>
-    {{leavesdata}}
+    <!-- {{leavesdata}} -->
     <div class="table">
       <el-table :data="leavesdata" style="width: 100%">
         
         <el-table-column label="年级">
           <template #default="scope">
-            {{scope}}
-            <el-tag>{{ scope.row.grade }}</el-tag>
+            <!-- {{scope.row}} -->
+            <el-tag>{{ scope.row.userMessage.grade }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="学号">
           <template #default="scope">
-            <span>{{ scope.row. account}}</span>
+            <span>{{ scope.row.userMessage.account}}</span>
           </template>
         </el-table-column>
         <el-table-column label="姓名">
           <template #default="scope">
-            <span>李向阳</span>
+            <span>{{ scope.row.userMessage.nickname}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="性别">
-          <template #default="scope">
-            <el-tag> 女 </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="班级">
-          <template #default="scope">
-            <el-tag> 计科213 </el-tag>
-          </template>
-        </el-table-column>
+
         <el-table-column label="请假类型">
           <template #default="scope">
-            <el-tag> 病假 </el-tag>
+            <el-tag> {{ scope.row.leaveType}} </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="请假时长">
           <template #default="scope">
-            <el-tag> 19：00-20：00 </el-tag>
+            <el-tag>{{ scope.row.startDate}}-{{ scope.row.endDate}} </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="scope">
             <el-button
               size="small"
-              @click="handleEdit(scope.$index, scope.row)"
+              @click="goToUserMessage(scope.row.userId)"
             >
               详情信息
             </el-button>
           </template>
         </el-table-column>
+        
       </el-table>
       <div class="page">
         <el-pagination
           background
-          v-model:current-page="currentPage3"
-          v-model:page-size="pageSize3"
+          v-model:current-page="leavepage"
           :size="size"
           :disabled="disabled"
           layout="prev, pager, next, jumper"
-          :total="1000"
+          :total="leaveallpage"
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
         />
       </div>
     </div>
@@ -89,8 +79,10 @@
 import { onMounted, ref } from "vue";
 import userTeacherMange from '@/views/teacher/api/userMange'
 import leaveMange from '@/views/teacher/api/dailyManger'
-const {getNewGrade,gradeDataAll} =userTeacherMange
-const {getStudentLeave,leavesdata}=leaveMange
+import { useRouter } from 'vue-router'
+const {getNewGrade} =userTeacherMange
+const router=useRouter()
+const {getStudentLeave,leavesdata,searchLeaves,leaveallpage,leavepage,sendNickName,getNewAllData}=leaveMange
 onMounted(async()=>{
   await getNewGrade()
   await getStudentLeave()
@@ -101,47 +93,19 @@ interface User {
   address: string;
 }
 import type { ComponentSize } from "element-plus";
-const currentPage3 = ref(5);
-const pageSize3 = ref(100);
 const size = ref<ComponentSize>("default");
 const disabled = ref(false);
 
 const handleSizeChange = (val: number) => {
   console.log(`${val} items per page`);
 };
-const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`);
-};
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row);
-};
-const tableData: User[] = [
-  {
-    date: "2016",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-];
+
+const goToUserMessage=(id)=>{
+  router.push({
+    path: '/teacher/person',
+    query: { memberId: id }
+  })
+}
 const input = ref();
 const value = ref("");
 const options = [
