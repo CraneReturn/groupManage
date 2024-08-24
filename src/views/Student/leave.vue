@@ -55,14 +55,14 @@
       </el-table>
       <div class="leave-page">
         <el-pagination
-          v-model:current-page="currentPage4"
-          v-model:page-size="pageSize4"
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
           :page-sizes="[5, 10, 20, 50]"
           :size="size"
           :disabled="disabled"
           :background="background"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="10"
+          :total="total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -72,11 +72,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref,onMounted } from "vue";
+import {getLeaveRecords} from "@/api/student.ts";
+
 const value1 = ref("");
 const value2 = ref("");
 const input1 = ref("");
 const input2 = ref("");
+
+const pageNum = ref<number>(1);
+const pageSize = ref<number>(5);
+const total = ref<number>(0);
+
 const options = [
   {
     value: "Option1",
@@ -94,25 +101,27 @@ const options = [
 const tableData = [
   {
     date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-02",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-04",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
+    status: 0,
+    approverNickname: "No. 189, Grove St, Los Angeles",
+    leaveType:"事假",
   },
 ];
+
+//获取请假记录
+const  getLeaves= ()=>{
+    getLeaveRecords(pageNum.value,pageSize.value)
+    .then((res)=>{
+      console.log(res);
+    }).catch((err)=>{
+      console.log(err);
+      console.log(pageNum.value);
+    })
+}
+
+// 在组件挂载时调用 API
+// onMounted(() => {
+//   getLeaves()
+// });
 </script>
 
 <style lang="scss" scoped>

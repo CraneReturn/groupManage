@@ -24,22 +24,46 @@
         <div class="info-content">
           <el-form :model="form" label-width="auto">
             <el-form-item label="学号">
-              <span>{{userInfo.account}}</span>
+              <span>{{ userInfo.account }}</span>
             </el-form-item>
             <el-form-item label="昵称">
-              <el-input v-model="form.nickname" placeholder="请输入昵称" clearable />
+              <el-input
+                v-model="form.nickname"
+                show-word-limit
+                maxlength="10"
+                placeholder="请输入昵称"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="学院">
-              <el-input v-model="form.college" placeholder="请输入你的学院" clearable />
+              <el-input
+                v-model="form.college"
+                placeholder="请输入你的学院"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="专业">
-              <el-input v-model="form.speciality" placeholder="请输入你的专业" clearable />
+              <el-input
+                v-model="form.speciality"
+                placeholder="请输入你的专业"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="班级">
-              <el-input v-model="form.ownClass" placeholder="请输入你的班级" clearable />
+              <el-input
+                v-model="form.ownClass"
+                placeholder="请输入你的班级"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="电话">
-              <el-input v-model="form.phone" placeholder="请输入你的电话" clearable />
+              <el-input
+                v-model="form.phone"
+                show-word-limit
+                maxlength="11"
+                placeholder="请输入你的电话"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="性别">
               <el-radio-group v-model="form.sex">
@@ -59,7 +83,7 @@
         <div class="info-content">
           <el-form :model="Eform" label-width="auto">
             <el-form-item label="邮箱">
-              <el-input v-model="Eform.email" />
+              <el-input v-model="Eform.email" show-word-limit maxlength="40" />
             </el-form-item>
             <el-form-item label="验证码">
               <el-input
@@ -68,10 +92,16 @@
                 placeholder="在邮箱中获取验证码"
               >
               </el-input>
-              <el-button type="primary" plain>获取验证码</el-button>
+              <el-button
+                type="primary"
+                :disabled="isButtonDisabled"
+                @click="sendStar"
+                plain
+                >{{ buttonText }}</el-button
+              >
             </el-form-item>
             <el-form-item class="sumbtn" style="margin-left: 53px">
-              <el-button type="primary" @click="onSubmit">绑定</el-button>
+              <el-button type="primary" @click="bindEmail">绑定</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -81,64 +111,36 @@
         <div class="info-content">
           <el-form :model="Pform" label-width="auto">
             <el-form-item label="旧密码">
-              <el-input type="password" v-model="Pform.oldpass" show-password />
+              <el-input
+                type="password"
+                placeholder="请填写你的旧密码"
+                v-model="Pform.oldpass"
+                show-password
+              />
             </el-form-item>
             <el-form-item label="新密码">
-              <el-input type="password" v-model="Pform.newpass" show-password />
+              <el-input
+                type="password"
+                placeholder="包含英文数字8-16位且不含空格"
+                maxlength="16"
+                v-model="Pform.newpass"
+                show-password
+              />
             </el-form-item>
             <el-form-item class="sumbtn" style="margin-left: 53px">
-              <el-button type="primary" @click="revisePassword">修改密码</el-button>
-              <!-- <el-button
-                type="danger"
-                class="forgetpass"
-                @click="foegetWord()"
-                plain
-                >忘记密码</el-button
-              > -->
+              <el-button type="primary" @click="revisePassword"
+                >修改密码</el-button
+              >
             </el-form-item>
           </el-form>
         </div>
       </div>
     </div>
-    <!-- <div class="forget-max" v-show="isforget">
-      <div class="foeget-pass">
-        <h3>忘记密码</h3>
-        <div class="pass-con">
-          <el-form :model="Fform" label-width="auto">
-            <el-form-item label="新密码">
-              <el-input type="password" v-model="Fform.newpass" show-password />
-            </el-form-item>
-            <el-form-item label="确认密码">
-              <el-input type="password" v-model="Fform.conpass" show-password />
-            </el-form-item>
-            <el-form-item label="验证码">
-              <el-input
-                style="width: 180px; margin-right: 10px"
-                v-model="Fform.code"
-                placeholder="在邮箱中获取验证码"
-              >
-              </el-input>
-              <el-button type="primary" plain>获取验证码</el-button>
-            </el-form-item>
-            <el-form-item class="sumbtn" style="margin-left: 66px">
-              <el-button type="primary" @click="onSubmit">确定</el-button>
-              <el-button
-                type="danger"
-                class="forgetpass"
-                @click="foegetWord()"
-                plain
-                >取消</el-button
-              >
-            </el-form-item>
-          </el-form>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, onUnmounted } from "vue";
 import { ElMessage, UploadFile } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadProps } from "element-plus";
@@ -149,6 +151,8 @@ import {
   upavatar,
   updateInfo,
   updatePassword,
+  sendCode,
+  addEmail
 } from "@/api/student.ts";
 
 const imageUrl = ref(
@@ -206,7 +210,8 @@ const reviseInfo = () => {
       form.value.ownClass,
       form.value.phone,
       form.value.sex
-    ).then((res) => {
+    )
+      .then((res) => {
         fetchUserInfo();
         ElMessage.success("修改成功");
       })
@@ -216,23 +221,108 @@ const reviseInfo = () => {
   }
 };
 
-const revisePassword = ()=>{
-    if(isnull(Pform.value.oldpass)){
-      ElMessage.warning("请填写你的旧密码");
-    }else if(isnull(Pform.value.newpass)){
-      ElMessage.warning("请填写你的新密码");
-    }else{
-      updatePassword(Pform.value.newpass,Pform.value.oldpass)
-      .then((res)=>{
-        console.log(res);
+//修改密码
+const revisePassword = () => {
+  if (isnull(Pform.value.oldpass)) {
+    ElMessage.warning("请填写你的旧密码");
+  } else if (isnull(Pform.value.newpass)) {
+    ElMessage.warning("请填写你的新密码");
+  } else if (!passreg.test(Pform.value.newpass)) {
+    ElMessage.warning("请填写8-16位包含英文数字的新密码");
+  } else {
+    updatePassword(Pform.value.newpass, Pform.value.oldpass)
+      .then((res) => {
+        if (res.success) {
+          Pform.value.newpass = "";
+          Pform.value.oldpass = "";
+          ElMessage.success("密码修改成功");
+        }
       })
-      .catch((err)=>{
+      .catch((err) => {
         console.log(err);
-        console.log(Pform.value.newpass);
-        
-      })
-    }
+      });
+  }
+};
+
+//绑定邮箱
+const bindEmail = ()=>{
+  if(isnull(Eform.value.email)){
+     ElMessage.warning("邮箱格式不能为空");
+  }else if (!emailreg.test(Eform.value.email)) {
+    ElMessage.warning("邮箱格式错误");
+  }else if(isnull(Eform.value.code)){
+    ElMessage.warning("请填写验证码");
+  }else{
+    sendCode(Eform.value.code,Eform.value.email).then((res)=>{
+      if(res.success){
+        ElMessage.success("绑定成功")
+      }
+    })
+  }
 }
+
+// 定义倒计时时间为60秒
+const countdownTime = 62;
+const buttonText = ref("获取验证码");
+const isButtonDisabled = ref(false);
+let interval: number | undefined;
+
+// 获取存储中的倒计时结束时间
+const getStoredEndTime = () => {
+  const storedTime = localStorage.getItem("countdownEndTime");
+  return storedTime ? parseInt(storedTime, 10) : null;
+};
+
+// 发送验证码
+const sendStar = () => {
+  if(isnull(Eform.value.email)){
+     ElMessage.warning("邮箱格式不能为空");
+  }else if (!emailreg.test(Eform.value.email)) {
+    ElMessage.warning("邮箱格式错误");
+  } else {
+    sendCode(Eform.value.email).then((res) => {
+      ElMessage.success("发送成功");
+      const endTime = Date.now() + countdownTime * 1000;
+      localStorage.setItem("countdownEndTime", endTime.toString());
+      updateCountdown();
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }
+};
+
+// 更新倒计时
+const updateCountdown = () => {
+  clearInterval(interval); // 清除之前的定时器，避免重复
+  interval = window.setInterval(() => {
+    const remainingTime = getRemainingTime(); // 获取剩余时间
+    if (remainingTime <= 0) {
+      clearInterval(interval); // 倒计时结束，清除定时器
+      isButtonDisabled.value = false; // 启用按钮
+      buttonText.value = "获取验证码"; // 恢复按钮文本
+      localStorage.removeItem("countdownEndTime"); // 清除存储的结束时间
+    } else {
+      isButtonDisabled.value = true; // 禁用按钮
+      buttonText.value = `${remainingTime}秒后可重新发送`; // 更新按钮文本，显示剩余时间
+    }
+  }, 1000); // 每秒更新一次
+};
+
+// 计算剩余时间
+const getRemainingTime = () => {
+  const endTime = getStoredEndTime(); // 获取结束时间
+  if (!endTime) return 0; // 如果没有结束时间，返回0
+  const currentTime = Date.now(); // 获取当前时间
+  return Math.max(Math.floor((endTime - currentTime) / 1000), 0); // 计算并返回剩余时间
+};
+
+// 初始化检查倒计时
+const initCountdown = () => {
+  const remainingTime = getRemainingTime(); // 获取剩余时间
+  if (remainingTime > 0) {
+    updateCountdown(); // 如果倒计时还没结束，继续倒计时
+  }
+};
 
 const form = ref({
   nickname: "",
@@ -257,19 +347,8 @@ const userInfo = ref({
   nickname: "用户",
   avatar: "",
   ownClass: "000",
-  account:"000000000"
+  account: "000000000",
 });
-
-// const Fform = ref({
-//   newpass: "",
-//   conpass: "",
-//   code: "",
-// });
-
-// const isforget = ref<boolean>(false);
-// const foegetWord = () => {
-//   isforget.value = !isforget.value;
-// };
 
 //空值判断
 function isnull(val) {
@@ -281,8 +360,12 @@ function isnull(val) {
   }
 }
 
+//正则
 let phonereg =
   /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+let passreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+let emailreg =
+  /^([a-z0-9A-Z]+[-|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)+[a-zA-Z]{2,}$/;
 
 //判断图片类型
 function ispicture(file) {
@@ -313,9 +396,16 @@ const fetchUserInfo = async () => {
     console.error("获取组信息失败：", error);
   }
 };
+
 // 在组件挂载时调用 API
 onMounted(() => {
   fetchUserInfo();
+  initCountdown();
+});
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  clearInterval(interval);
 });
 </script>
 

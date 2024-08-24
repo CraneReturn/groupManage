@@ -25,10 +25,11 @@ export function getOwnInfo() {
 //获取请假记录
 export function getLeaveRecords(pageNum: number, pageSize: number) {
   return service({
-    params: { pageNum, pageSize },
+    data: { pageNum, pageSize },
     url: `/user/getLeaveRecords`,
     method: "get",
     headers: {
+      "Content-Type": "application/json",
       isToken: true,
     },
   });
@@ -94,12 +95,41 @@ export function updatePassword(newPassword: string, oldPassword: string) {
   return service({
     url: `/user/updatePassword`,
     method: "put",
-    data: {
+    params: {
       newPassword,
       oldPassword,
     },
     headers: {
-      "Content-Type": "application/json",
+      isToken: true,
+    },
+  });
+}
+
+//发送验证码
+export function sendCode(email:string) {
+  return service({
+    url: `/user/sendCode`,
+    method: "get",
+    params: {
+      codeType: 1,
+      email,
+    },
+    headers: {
+      isToken: true,
+    },
+  });
+}
+
+//绑定邮箱
+export function addEmail(code:string ,email:string) {
+  return service({
+    url: `/user/addEmail`,
+    method: "post",
+    params: {
+      code,
+      email,
+    },
+    headers: {
       isToken: true,
     },
   });
