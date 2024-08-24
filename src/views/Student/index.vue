@@ -4,7 +4,7 @@
       <router-link to="group">
         <div class="groupAbout">
           <div class="logo">
-            <img src="@/assets/image/小组logo.png" alt="logo" />
+            <img :src="groupInfo.groupAvatar" />
           </div>
           <div class="info">
             <h1>{{groupInfo.groupName}}</h1>
@@ -48,7 +48,7 @@ import { getOwnGroupInfo,getOwnInfo } from '@/api/student.ts';
 const groupInfo = ref({
   groupName:"",
   groupIntro:"",
-  groupLogo:""
+  groupAvatar:""
 });
 
 const userInfo = ref({
