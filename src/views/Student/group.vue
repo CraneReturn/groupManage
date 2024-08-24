@@ -11,7 +11,7 @@
         <div class="oprateInfo">
           <div class="logoAbout">
             <div class="logo">
-              <img :src="groupInfo.logo" alt="logo" v-if="!updateStatus" />
+              <img :src="groupInfo.groupAvatar" alt="logo" v-if="!updateStatus" />
             </div>
             <div class="info">
               <h1>{{groupInfo.groupName}}</h1>
@@ -40,6 +40,7 @@ import { getOwnGroupInfo } from '@/api/student.ts';
 const groupInfo = ref({
   groupName:"",
   groupIntro:"",
+  groupAvatar:""
 });
 const info = ref(groupInfo.groupIntro);
 const name = ref(groupInfo.groupName);
