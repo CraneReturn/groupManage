@@ -25,7 +25,7 @@ export function getOwnInfo() {
 //获取请假记录
 export function getLeaveRecords(pageNum: number, pageSize: number) {
   return service({
-    data: { pageNum, pageSize },
+    params: { pageNum, pageSize },
     url: `/user/getLeaveRecords`,
     method: "get",
     headers: {
@@ -130,6 +130,24 @@ export function addEmail(code:string ,email:string) {
       email,
     },
     headers: {
+      isToken: true,
+    },
+  });
+}
+
+//请假
+export function leave(reason:string ,leaveType:string,startDate:string,endDate:string) {
+  return service({
+    url: `/user/leave`,
+    method: "post",
+    data: {
+      reason,
+      leaveType,
+      startDate,
+      endDate
+    },
+    headers: {
+      "Content-Type": "application/json",
       isToken: true,
     },
   });
