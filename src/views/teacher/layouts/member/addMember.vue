@@ -116,6 +116,8 @@ const addNewUserGroup = (async (ruleform: RuleForm) => {
         });
     } else if (isValidPhone && isValidEmail) {
         const data = await addNewStudent(ruleform)
+        console.log(data);
+        
         if(data.code==20000){
             ElMessage({
             message: '添加新成员成功',

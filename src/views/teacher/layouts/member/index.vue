@@ -109,6 +109,7 @@ const {
   userAddFlag,
   wholeStudentDataX,
   wholeStudentY,
+  currentData
 } = userTeacherMange;
 const total = ref(wholeStudentY.value[wholeStudentY.value.length - 1]);
 let internalNumber = [...wholeStudentY.value]; // 创建原数组的副本
@@ -155,17 +156,6 @@ const current = ref(null);
 let chartSum: echarts.ECharts | null = null;
 let chart: echarts.ECharts | null = null;
 
-let currentData = ref<DataObject[]>([]);
-
-const data: DataObject[] = wholeStudentDataX.value
-  .slice(0, 3)
-  .map((year: any, index: string | number) => ({
-    name: `${year}级`,
-    value: wholeStudentY.value[index] || "", // Default to empty string if no value
-  }));
-currentData.value = data;
-console.log(wholeStudentDataX.value, data, wholeStudentY.value);
-
 // 初始化图表
 const initChart = () => {
   if (chartContainer.value) {
@@ -195,7 +185,7 @@ const lookDownloadUsetype = () => {
       // 释放URL对象
       window.URL.revokeObjectURL(url);
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 //导入
 const importDownLoaduser = async (event: { target: { files: any[] } }) => {
@@ -307,6 +297,7 @@ watch(
     deep: true,
   }
 );
+
 // 在组件挂载后初始化图表，并设置窗口调整监听器
 onMounted(() => {
   initChart();
@@ -320,8 +311,6 @@ onBeforeUnmount(() => {
 });
 onBeforeMount(async () => {
   await getNewGrade();
-
-  console.log(wholeStudentDataX, "3333");
 });
 </script>
 <style lang="scss" scoped>

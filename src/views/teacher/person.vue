@@ -9,9 +9,10 @@
         </div>
         <div class="info">
           <h1>{{ userMaindata.ownClass }}{{ userMaindata.nickname }}</h1>
+          
           <div class="label"><span>{{ userMaindata.authority == 3 ? `${groupMaindata.groupName}负责人` :
-            groupMaindata.groupName
-          }}负责人</span><span>{{ userMaindata.grade }}</span></div>
+            `${groupMaindata.groupName}`
+          }}</span><span>{{ userMaindata.grade }}</span></div>
         </div>
       </div>
       <div class="oprateUser">

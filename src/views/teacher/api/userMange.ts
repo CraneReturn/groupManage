@@ -17,6 +17,7 @@ const getAllUserMethods = (async () => {
 const userAddFlag = ref<boolean>(false)
 const wholeStudentDataX = ref<any>([])
 const wholeStudentY = <any>ref([])
+const currentData=ref([])
 //在校人员
 const stayStudent = ref([])
 const getNewGrade = (async () => {
@@ -36,6 +37,12 @@ const getNewGrade = (async () => {
         gradeDataAll.value.push(...addValue)
         wholeStudentDataX.value.push(...getWholeDatax)
         wholeStudentY.value.push(...getWholeDatay)
+        let datanew=wholeStudentDataX.value.slice(0, 3)
+        .map((year: any, index: string | number) => ({
+          name: `${year}级`,
+          value: wholeStudentY.value[index] || "", // Default to empty string if no value
+        }));
+        currentData.value=[...datanew]
     } else {
         gradeDataAll.value = []
     }
@@ -63,5 +70,6 @@ export default {
     getNewGrade,
     gradeDataAll,
     wholeStudentDataX,
-    wholeStudentY
+    wholeStudentY,
+    currentData
 }
