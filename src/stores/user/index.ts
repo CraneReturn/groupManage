@@ -46,7 +46,7 @@ export const userStore = defineStore("user", {
       token: getToken() || "",
       userType: "",
       userName: "",
-      avatar: defultAvater,
+      avatar: "",
       email: "",
       phone: "",
       sex: "",
@@ -100,10 +100,12 @@ export const userStore = defineStore("user", {
     UserInfo() {
       return new Promise(() => {
         getUserInfo().then((response) => {
+          console.log(response);
+
           if (response) {
             const {
               nickname,
-              avater,
+              avatar,
               collage,
               email,
               sex,
@@ -111,8 +113,18 @@ export const userStore = defineStore("user", {
               account,
               ownClass,
             } = response.data;
+            console.log({
+              nickname,
+              avatar,
+              collage,
+              email,
+              sex,
+              speciality,
+              account,
+              ownClass,
+            });
             this.userName = nickname;
-            this.avatar = avater;
+            this.avatar = avatar || defultAvater;
             this.collage = collage;
             this.sex = sex;
             this.email = email;

@@ -5,26 +5,27 @@
     <!-- 短信登录 -->
     <div class="loginMain">
       <div class="loginWays">
-        <button :class="{ active: passwordShow }" @click="changePassword">
+        <button class="active" @click="changePassword">
           <p>密码登录</p>
           <span></span>
         </button>
-        <button :class="{ active: !passwordShow }" @click="changeCode">
+        <!-- <button :class="{ active: !passwordShow }" @click="changeCode">
           <p>邮箱登录</p>
           <span></span>
-        </button>
+        </button> -->
       </div>
       <div>
         <password v-if="passwordShow" />
-        <email v-else />
+        <a class="forget" v-if="passwordShow" @click="changeCode">忘记密码</a>
+        <email v-else @back="back" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Password from "./Password.vue";
-import Email from "./Email.vue";
+import Password from "./password.vue";
+import Email from "./email.vue";
 import { ref } from "vue";
 
 let passwordShow = ref(true);
@@ -36,9 +37,20 @@ const changeCode = () => {
 const changePassword = () => {
   passwordShow.value = true;
 };
+function back(value: boolean) {
+  passwordShow.value = value;
+}
 </script>
 
 <style lang="scss" scoped>
+a {
+  font-size: 12px;
+  color: #ccc;
+  cursor: pointer;
+}
+a:hover {
+  color: var(--jjext-color-dropdown-text);
+}
 .login {
   min-width: 375px;
   background-color: var(--el-menu-bg-color);

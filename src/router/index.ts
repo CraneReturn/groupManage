@@ -16,6 +16,7 @@ const router = createRouter({
       path: "/teacher",
       name: "教师",
       component: () => import("@/views/teacher/index.vue"),
+      redirect: "/teacher/info",
       children: [
         {
           path: "message",
@@ -78,8 +79,8 @@ const router = createRouter({
           component: () => import("@/views/Student/userCenter.vue"),
         },
         {
-          path:"group",
-          name:"group",
+          path: "group",
+          name: "group",
           component: () => import("@/views/Student/group.vue"),
         },
       ],
@@ -92,9 +93,8 @@ const router = createRouter({
         {
           path: "analysis",
           name: "Analysis",
-          component: () => import(
-            "@/views/superAdmin/layouts/Dashboard/Analysis.vue"
-          ),
+          component: () =>
+            import("@/views/superAdmin/layouts/Dashboard/Analysis.vue"),
         },
         {
           path: "allGroups",
@@ -140,7 +140,6 @@ const router = createRouter({
         },
       ],
     },
-    
   ],
 });
 type UserType = "0" | "1" | "2" | "3";
