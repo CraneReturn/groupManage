@@ -68,7 +68,7 @@
           :size="size"
           :disabled="disabled"
           layout="prev, pager, next, jumper"
-          :total="leaveallpage"
+          :total="leaveallpage*10"
           @size-change="handleSizeChange"
         />
       </div>
@@ -76,7 +76,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import userTeacherMange from '@/views/teacher/api/userMange'
 import leaveMange from '@/views/teacher/api/dailyManger'
 import { useRouter } from 'vue-router'
@@ -106,6 +106,17 @@ const goToUserMessage=(id)=>{
     query: { memberId: id }
   })
 }
+watch(leavepage, async (newValue, oldValue) => {
+    console.log('11111');
+    
+    if (newValue != oldValue) {
+        if (sendNickName.value == '') {
+            await getStudentLeave()
+        } else {
+            await searchLeaves()
+        }
+    }
+})
 const input = ref();
 const value = ref("");
 const options = [

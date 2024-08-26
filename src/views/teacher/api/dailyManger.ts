@@ -8,10 +8,13 @@ let leavesdata = ref([])
 const sendNickName = ref('')
 //获取小组请假信息
 const getStudentLeave = (async () => {
-    const allData = await allLeavesSend(leaveallpage.value, 10);
+    
+    const allData = await allLeavesSend(leavepage.value, 10);
     if (allData.code == 20000) {
         leavesdata.value=[]
         leaveallpage.value = allData.data.pages;
+        console.log(allData.data);
+        
         if (allData.data.records.length !== 0) {
             const promises = allData.data.records.map(async (leaves) => {
                 const id = leaves.userId;
@@ -21,6 +24,8 @@ const getStudentLeave = (async () => {
             await Promise.all(promises);
         }
         leavesdata.value = [...allData.data.records];
+        console.log(leaveallpage.value);
+        
 
 
     } else {
@@ -31,11 +36,11 @@ const searchLeaves = (async () => {
     if (sendNickName.value == '') {
         ElMessage.error('请先输入你想搜索的学生姓名')
     } else {
-        leaveallpage.value = 1
-        const searchData = await searchLeavesSend(sendNickName.value, leaveallpage.value, 10)
+        leavepage.value = 1
+        const searchData = await searchLeavesSend(sendNickName.value, leavepage.value, 10)
         leavesdata.value=[]
-        leaveallpage.value = searchData.data.pages;
-        if (searchData.code == 20000) {
+        leaveallpge.value = searchData.data.pages;
+        if (searcahData.code == 20000) {
             if (searchData.data.records.length !== 0) {
                 const promises = searchData.data.records.map(async (leaves) => {
                     const id = leaves.userId;
@@ -62,15 +67,6 @@ const getUserMessageByid = (async (id: number) => {
     return userMessage
 })
 
-watch(leavepage, async (newValue, oldValue) => {
-    if (newValue != oldValue) {
-        if (sendNickName.value == '') {
-            await getStudentLeave()
-        } else {
-            await searchLeaves()
-        }
-    }
-})
 const getNewAllData=async()=>{
     leaveallpage.value=1;
     sendNickName.value = ''
