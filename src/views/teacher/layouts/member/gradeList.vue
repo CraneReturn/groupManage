@@ -1,6 +1,5 @@
 <template>
   <div class="grades">
-    
     <div class="table">
       <el-table :data="alluserData" style="width: 100%">
         <el-table-column label="年级">

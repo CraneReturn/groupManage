@@ -13,8 +13,7 @@ const getStudentLeave = (async () => {
     if (allData.code == 20000) {
         leavesdata.value=[]
         leaveallpage.value = allData.data.pages;
-        console.log(allData.data);
-        
+    
         if (allData.data.records.length !== 0) {
             const promises = allData.data.records.map(async (leaves) => {
                 const id = leaves.userId;
@@ -62,8 +61,6 @@ const getUserMessageByid = (async (id: number) => {
     if (newdata.code == 20000) {
         userMessage = newdata.data
     }
-
-
     return userMessage
 })
 
