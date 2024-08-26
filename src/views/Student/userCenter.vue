@@ -7,47 +7,73 @@
       <div class="user-avatar">
         <el-upload
           class="avatar-uploader"
-          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
           :show-file-list="false"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload"
+          :auto-upload="false"
+          :on-change="handleChange"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
         </el-upload>
       </div>
       <div class="header-content">
-        <div class="user-name">蛋黄派</div>
-        <div class="user-college">信息工程学院</div>
+        <div class="user-name">{{ userInfo.nickname }}</div>
+        <div class="user-college">{{ userInfo.ownClass }}</div>
       </div>
       <div class="user-info">
         <h2>基本信息</h2>
         <div class="info-content">
           <el-form :model="form" label-width="auto">
+            <el-form-item label="学号">
+              <span>{{ userInfo.account }}</span>
+            </el-form-item>
             <el-form-item label="昵称">
-              <el-input v-model="form.name" clearable />
+              <el-input
+                v-model="form.nickname"
+                show-word-limit
+                maxlength="10"
+                placeholder="请输入昵称"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="学院">
-              <el-input v-model="form.college" clearable />
+              <el-input
+                v-model="form.college"
+                placeholder="请输入你的学院"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="专业">
-              <el-input v-model="form.speciality" clearable />
+              <el-input
+                v-model="form.speciality"
+                placeholder="请输入你的专业"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="班级">
-              <el-input v-model="form.ownClass" clearable />
+              <el-input
+                v-model="form.ownClass"
+                placeholder="请输入你的班级"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="电话">
-              <el-input v-model="form.phone" clearable />
+              <el-input
+                v-model="form.phone"
+                show-word-limit
+                maxlength="11"
+                placeholder="请输入你的电话"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="性别">
               <el-radio-group v-model="form.sex">
-                <el-radio value="male">男</el-radio>
-                <el-radio value="female">女</el-radio>
+                <el-radio value="男" name="sex">男</el-radio>
+                <el-radio value="女" name="sex">女</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item class="sumbtn">
-              <el-button type="primary" @click="onSubmit">修改</el-button>
-              <el-button>取消</el-button>
+              <el-button type="primary" @click="reviseInfo">修改</el-button>
+              <el-button @click="fetchUserInfo">取消</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -57,7 +83,7 @@
         <div class="info-content">
           <el-form :model="Eform" label-width="auto">
             <el-form-item label="邮箱">
-              <el-input v-model="Eform.email" />
+              <el-input v-model="Eform.email" show-word-limit maxlength="40" />
             </el-form-item>
             <el-form-item label="验证码">
               <el-input
@@ -66,10 +92,16 @@
                 placeholder="在邮箱中获取验证码"
               >
               </el-input>
-              <el-button type="primary" plain>获取验证码</el-button>
+              <el-button
+                type="primary"
+                :disabled="isButtonDisabled"
+                @click="sendStar"
+                plain
+                >{{ buttonText }}</el-button
+              >
             </el-form-item>
             <el-form-item class="sumbtn" style="margin-left: 53px">
-              <el-button type="primary" @click="onSubmit">绑定</el-button>
+              <el-button type="primary" @click="bindEmail">绑定</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -77,44 +109,28 @@
       <div class="user-info">
         <h2>密码</h2>
         <div class="info-content">
-          <el-form :model="Eform" label-width="auto">
+          <el-form :model="Pform" label-width="auto">
             <el-form-item label="旧密码">
-              <el-input v-model="Eform.email" />
+              <el-input
+                type="password"
+                placeholder="请填写你的旧密码"
+                v-model="Pform.oldpass"
+                show-password
+              />
             </el-form-item>
             <el-form-item label="新密码">
-              <el-input v-model="Eform.email" />
+              <el-input
+                type="password"
+                placeholder="包含英文数字8-16位且不含空格"
+                maxlength="16"
+                v-model="Pform.newpass"
+                show-password
+              />
             </el-form-item>
             <el-form-item class="sumbtn" style="margin-left: 53px">
-              <el-button type="primary" @click="onSubmit">修改密码</el-button>
-              <el-button type="danger" class="forgetpass" @click="foegetWord()" plain>忘记密码</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-      </div>
-    </div>
-    <div class="forget-max" v-show="isforget">
-      <div class="foeget-pass">
-        <h3>忘记密码</h3>
-        <div class="pass-con">
-          <el-form :model="Eform" label-width="auto">
-            <el-form-item label="新密码">
-              <el-input v-model="Eform.email" />
-            </el-form-item>
-            <el-form-item label="确认密码">
-              <el-input v-model="Eform.email" />
-            </el-form-item>
-            <el-form-item label="验证码">
-              <el-input
-                style="width: 180px; margin-right: 10px"
-                v-model="Eform.code"
-                placeholder="在邮箱中获取验证码"
+              <el-button type="primary" @click="revisePassword"
+                >修改密码</el-button
               >
-              </el-input>
-              <el-button type="primary" plain>获取验证码</el-button>
-            </el-form-item>
-            <el-form-item class="sumbtn" style="margin-left: 66px">
-              <el-button type="primary" @click="onSubmit">确定</el-button>
-              <el-button type="danger" class="forgetpass" @click="foegetWord()" plain>取消</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -124,37 +140,192 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import { ElMessage } from "element-plus";
+import { ref, reactive, onMounted, onUnmounted } from "vue";
+import { ElMessage, UploadFile } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
-
 import type { UploadProps } from "element-plus";
-import { log } from "console";
+import {
+  getOwnGroupInfo,
+  getOwnInfo,
+  upImg,
+  upavatar,
+  updateInfo,
+  updatePassword,
+  sendCode,
+  addEmail
+} from "@/api/student.ts";
 
 const imageUrl = ref(
   "https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
 );
 
-const handleAvatarSuccess: UploadProps["onSuccess"] = (
-  response,
-  uploadFile
-) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw!);
-};
-
-const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
-  if (rawFile.type !== "image/jpeg") {
-    ElMessage.error("Avatar picture must be JPG format!");
-    return false;
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error("Avatar picture size can not exceed 2MB!");
-    return false;
+//上传头像
+const handleChange = (file: UploadFile) => {
+  console.log("当前文件:", file);
+  if (!ispicture(file.raw)) {
+    ElMessage.error("请上传图片文件!");
+  } else if (file.size / 1024 / 1024 > 2) {
+    ElMessage.error("图片大小超过2MB!");
+  } else {
+    const formData = new FormData();
+    formData.append("file", file.raw);
+    upImg(formData) // 调用上传函数
+      .then((res) => {
+        upavatar(res.data)
+          .then((response) => {
+            imageUrl.value = res.data;
+            ElMessage.success("上传成功");
+          })
+          .catch((err) => {
+            ElMessage.error("上传失败");
+            console.error(err);
+          });
+      })
+      .catch((error) => {
+        ElMessage.error("上传失败");
+        console.error(error);
+      });
   }
-  return true;
 };
 
-const form = reactive({
-  name: "",
+//修改用户信息
+const reviseInfo = () => {
+  if (isnull(form.value.nickname)) {
+    ElMessage.warning("昵称不能为空");
+  } else if (isnull(form.value.college)) {
+    ElMessage.warning("学院不能为空");
+  } else if (isnull(form.value.speciality)) {
+    ElMessage.warning("专业不能为空");
+  } else if (isnull(form.value.ownClass)) {
+    ElMessage.warning("班级不能为空");
+  } else if (isnull(form.value.phone)) {
+    ElMessage.warning("电话不能为空");
+  } else if (!phonereg.test(form.value.phone)) {
+    ElMessage.warning("电话格式错误");
+  } else {
+    updateInfo(
+      form.value.nickname,
+      form.value.college,
+      form.value.speciality,
+      form.value.ownClass,
+      form.value.phone,
+      form.value.sex
+    )
+      .then((res) => {
+        fetchUserInfo();
+        ElMessage.success("修改成功");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
+
+//修改密码
+const revisePassword = () => {
+  if (isnull(Pform.value.oldpass)) {
+    ElMessage.warning("请填写你的旧密码");
+  } else if (isnull(Pform.value.newpass)) {
+    ElMessage.warning("请填写你的新密码");
+  } else if (!passreg.test(Pform.value.newpass)) {
+    ElMessage.warning("请填写8-16位包含英文数字的新密码");
+  } else {
+    updatePassword(Pform.value.newpass, Pform.value.oldpass)
+      .then((res) => {
+        if (res.success) {
+          Pform.value.newpass = "";
+          Pform.value.oldpass = "";
+          ElMessage.success("密码修改成功");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
+
+//绑定邮箱
+const bindEmail = ()=>{
+  if(isnull(Eform.value.email)){
+     ElMessage.warning("邮箱格式不能为空");
+  }else if (!emailreg.test(Eform.value.email)) {
+    ElMessage.warning("邮箱格式错误");
+  }else if(isnull(Eform.value.code)){
+    ElMessage.warning("请填写验证码");
+  }else{
+    sendCode(Eform.value.code,Eform.value.email).then((res)=>{
+      if(res.success){
+        ElMessage.success("绑定成功")
+      }
+    })
+  }
+}
+
+// 定义倒计时时间为60秒
+const countdownTime = 62;
+const buttonText = ref("获取验证码");
+const isButtonDisabled = ref(false);
+let interval: number | undefined;
+
+// 获取存储中的倒计时结束时间
+const getStoredEndTime = () => {
+  const storedTime = localStorage.getItem("countdownEndTime");
+  return storedTime ? parseInt(storedTime, 10) : null;
+};
+
+// 发送验证码
+const sendStar = () => {
+  if(isnull(Eform.value.email)){
+     ElMessage.warning("邮箱格式不能为空");
+  }else if (!emailreg.test(Eform.value.email)) {
+    ElMessage.warning("邮箱格式错误");
+  } else {
+    sendCode(Eform.value.email).then((res) => {
+      ElMessage.success("发送成功");
+      const endTime = Date.now() + countdownTime * 1000;
+      localStorage.setItem("countdownEndTime", endTime.toString());
+      updateCountdown();
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }
+};
+
+// 更新倒计时
+const updateCountdown = () => {
+  clearInterval(interval); // 清除之前的定时器，避免重复
+  interval = window.setInterval(() => {
+    const remainingTime = getRemainingTime(); // 获取剩余时间
+    if (remainingTime <= 0) {
+      clearInterval(interval); // 倒计时结束，清除定时器
+      isButtonDisabled.value = false; // 启用按钮
+      buttonText.value = "获取验证码"; // 恢复按钮文本
+      localStorage.removeItem("countdownEndTime"); // 清除存储的结束时间
+    } else {
+      isButtonDisabled.value = true; // 禁用按钮
+      buttonText.value = `${remainingTime}秒后可重新发送`; // 更新按钮文本，显示剩余时间
+    }
+  }, 1000); // 每秒更新一次
+};
+
+// 计算剩余时间
+const getRemainingTime = () => {
+  const endTime = getStoredEndTime(); // 获取结束时间
+  if (!endTime) return 0; // 如果没有结束时间，返回0
+  const currentTime = Date.now(); // 获取当前时间
+  return Math.max(Math.floor((endTime - currentTime) / 1000), 0); // 计算并返回剩余时间
+};
+
+// 初始化检查倒计时
+const initCountdown = () => {
+  const remainingTime = getRemainingTime(); // 获取剩余时间
+  if (remainingTime > 0) {
+    updateCountdown(); // 如果倒计时还没结束，继续倒计时
+  }
+};
+
+const form = ref({
+  nickname: "",
   college: "",
   speciality: "",
   ownClass: "",
@@ -162,20 +333,80 @@ const form = reactive({
   sex: "",
 });
 
-const Eform = reactive({
+const Eform = ref({
   email: "",
   code: "",
 });
 
-const isforget = ref<boolean>(false);
+const Pform = ref({
+  oldpass: "",
+  newpass: "",
+});
 
-const onSubmit = () => {
-  console.log("submit!");
+const userInfo = ref({
+  nickname: "用户",
+  avatar: "",
+  ownClass: "000",
+  account: "000000000",
+});
+
+//空值判断
+function isnull(val) {
+  const str = val.replace(/(^\s*)|(\s*$)/g, "");
+  if (str == "" || str == undefined || str == null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//正则
+let phonereg =
+  /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+let passreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+let emailreg =
+  /^([a-z0-9A-Z]+[-|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)+[a-zA-Z]{2,}$/;
+
+//判断图片类型
+function ispicture(file) {
+  let type = file.type;
+  if (
+    type === "image/git" ||
+    type === "image/jpeg" ||
+    type === "image/jpg" ||
+    type === "image/png" ||
+    type === "image/webp"
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//获取用户信息
+const fetchUserInfo = async () => {
+  try {
+    const response = await getOwnInfo();
+    const data = response.data;
+    form.value = { ...data };
+    userInfo.value = { ...data };
+    Eform.value.email = data.email;
+    imageUrl.value = data.avatar;
+  } catch (error) {
+    console.error("获取组信息失败：", error);
+  }
 };
 
-const foegetWord = () => {
-  isforget.value= !isforget.value;
-};
+// 在组件挂载时调用 API
+onMounted(() => {
+  fetchUserInfo();
+  initCountdown();
+});
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  clearInterval(interval);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -258,7 +489,7 @@ const foegetWord = () => {
       border-radius: 5px;
       transform: translate(-50%, -60%);
       padding: 10px;
-      .pass-con{
+      .pass-con {
         padding: 10px;
         margin-top: 10px;
       }

@@ -47,5 +47,24 @@ export function sendCode(obj: object) {
     params: params,
     url: `user/sendCode`,
     method: "get",
+    headers: {
+      isToken: false,
+    },
+  });
+}
+export function findPassword(obj: object) {
+  let params = {
+    code: "",
+    email: "",
+    password: "",
+  };
+  params = { ...params, ...obj };
+  return service({
+    params: params,
+    url: `user/getOldPassword`,
+    method: "put",
+    headers: {
+      isToken: false,
+    },
   });
 }

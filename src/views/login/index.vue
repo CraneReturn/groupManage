@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import Login from "./login.vue";
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .loginIndex {
   width: 100vw;
   height: 100vh;
