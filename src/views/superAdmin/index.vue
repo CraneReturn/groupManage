@@ -44,9 +44,7 @@
         >
           <div class="moreUserInfo">
            <div class="footer">
-              <el-button size="small" @click="dialogFormVisible = true"
-                >修改密码</el-button
-              >
+             
               <b></b>
               <el-button size="small" @click="loginOut">退出登录</el-button>
             </div>
@@ -64,10 +62,12 @@
            <!-- 头部信息 -->
             <!-- 小组logo以及小组名称 -->
            
-             <router-link to="/superAdmin/analysis">
+            <router-link to="/superAdmin/allteachers">
             <el-menu-item index="1">
-              <el-icon><Comment /></el-icon>
-              <template #title>控制台</template>
+              <el-icon><Management /></el-icon>  
+              <template #title>
+                教师管理
+              </template>
             </el-menu-item>
           </router-link>
             <el-sub-menu index="2">
@@ -91,14 +91,7 @@
               </el-menu-item>
             </router-link>
             </el-sub-menu>
-            <router-link to="/superAdmin/allteachers">
-            <el-menu-item index="3">
-              <el-icon><Management /></el-icon>  
-              <template #title>
-                教师管理
-              </template>
-            </el-menu-item>
-          </router-link>
+          
           <router-link to="/superAdmin/repairReview">
             <el-menu-item index="4">
               <el-icon><Management /></el-icon>  

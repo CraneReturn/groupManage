@@ -38,7 +38,7 @@ const rolePaths: Record<UserType | string, string> = {
   "0": "/student",
   "1": "/student",
   "2": "/teacher",
-  "3": "/superAdmin",
+  "3": "/superAdmin/allteachers",
 };
 export const userStore = defineStore("user", {
   state: (): user => {

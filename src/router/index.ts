@@ -96,12 +96,7 @@ const router = createRouter({
       name: "superAdmin",
       component: () => import("@/views/superAdmin/index.vue"),
       children: [
-        {
-          path: "analysis",
-          name: "控制台",
-          component: () =>
-            import("@/views/superAdmin/layouts/Dashboard/Analysis.vue"),
-        },
+
         {
           path: "allGroups",
           name: "已成立小组",
