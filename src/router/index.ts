@@ -96,15 +96,10 @@ const router = createRouter({
       name: "superAdmin",
       component: () => import("@/views/superAdmin/index.vue"),
       children: [
-        {
-          path: "analysis",
-          name: "Analysis",
-          component: () =>
-            import("@/views/superAdmin/layouts/Dashboard/Analysis.vue"),
-        },
+
         {
           path: "allGroups",
-          name: "allGroups",
+          name: "已成立小组",
           component: () =>
             import(
               "@/views/superAdmin/layouts/allGroupsAdmin/allGroupsAdmin.vue"
@@ -112,7 +107,7 @@ const router = createRouter({
         },
         {
           path: "allTeachers",
-          name: "allTeachers",
+          name: "教师管理",
           component: () =>
             import(
               "@/views/superAdmin/layouts/allTeachersAdmin/allTeachersAdmin.vue"
@@ -120,29 +115,34 @@ const router = createRouter({
         },
         {
           path: "groupReview",
-          name: "groupReview",
+          name: "待审核小组",
           component: () =>
             import("@/views/superAdmin/layouts/groupReview/groupReview.vue"),
         },
         {
           path: "outGroup",
-          name: "outGroup",
+          name: "未通过审核小组",
           component: () =>
             import("@/views/superAdmin/layouts/groupReview/outGroup.vue"),
         },
         {
           path: "repairReview",
-          name: "repairReview",
+          name: "报修审核",
           component: () =>
             import("@/views/superAdmin/layouts/repairReview/repairReview.vue"),
         },
         {
           path: "groupStudents",
-          name: "groupStudents",
+          name: "小组学生",
           component: () =>
             import(
               "@/views/superAdmin/layouts/allGroupsAdmin/components/groupStudents.vue"
             ),
+        },
+        {
+          path: "userCenter",
+          name: "个人中心",
+          component: () => import("@/views/superAdmin/layouts/userCenter/userCenter.vue"),
         },
       ],
     },

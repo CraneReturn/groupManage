@@ -52,12 +52,12 @@
           >
             <el-table-column type="selection" width="55" />
             <el-table-column property="account" label="工号" width="190" />
-            <el-table-column property="name" label="姓名" width="120" />
+            <el-table-column property="nickname" label="姓名" width="120" />
             <el-table-column property="sex" label="性别" width="120" />
             <el-table-column property="groupName" label="小组名称"  />
             <el-table-column label="操作">
             <template #default="{ row }">
-              <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.address,row.groupName,row.intro) " 
+              <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.account,row.groupName,row.nickname,row.sex,row.groupId) " 
               type="primary" plain size="small">修改</el-button>
             </template>
           </el-table-column>
@@ -80,7 +80,39 @@
           />
         </div>
     <div>
+      <el-dialog v-model="dialogFormVisible" title="修改教师信息" width="500"  >
+    <el-form :model="form">
+      <el-form-item label="姓名" :label-width="formLabelWidth">
+        <el-input v-model="form.nickname" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="性别" :label-width="formLabelWidth">
+        <el-radio-group v-model="form.teaSex">
+            <el-radio value="男" name="teaSex">男</el-radio>
+            <el-radio value="女" name="teaSex">女</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="工号" :label-width="formLabelWidth">
+        <el-input v-model="form.account" autocomplete="off" />
+      </el-form-item>
+      <!-- <el-form-item label="小组" :label-width="formLabelWidth">
+        <el-input v-model="form.groupName" autocomplete="off" />
+      </el-form-item> -->
+      <el-form-item label="教师id" :label-width="formLabelWidth" style="display: none;">
+        <el-input v-model="form.teaId" autocomplete="off" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click.stop="dialogFormVisible = false" @click.native="getupdateApi(form)">
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
     </div>
+
+
     </div>
 </template>
  
@@ -96,13 +128,9 @@ import { getTea } from '@/api/admin.ts';
 import { del } from '@/api/admin.ts'
 import { ElMessage } from 'element-plus'
 import { uploadTea } from '@/api/admin.ts';
-interface User {
-  id:string
-  account: string
-  name: string
-  sex: string
-  groupName: string
-}
+import { putTea } from '@/api/admin.ts';
+import { ElNotification } from 'element-plus'
+
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const multipleSelection = ref<User[]>([])
 const input3 = ref('');
@@ -111,14 +139,67 @@ const pageSize = ref(10);
 const total = ref(0); // 定义响应式总记录数变量
 const tableData = ref<any[]>([]); // 使用 ref 来使数据响应式
 const selectedRows = ref<any[]>([]); // 使用 ref 来使数据响应式
-
+const dialogFormVisible = ref(false)
 const teachers=ref([]);
-// const teachersIds=ref([]);
-
 const select = ref('')
 const account=ref('');
-const nickname=ref('')
+const nickname=ref('');
 const file = ref(null);
+const formLabelWidth = '140px'
+var form = reactive({
+    account:'',
+    nickname:'',
+    groupName:'',
+    groupId:'',
+    teaId:'',
+    teaSex:''
+  })
+  interface User {
+  id:string
+  account: string
+  name: string
+  sex: string
+  groupName: string
+}
+// const teachersIds=ref([]);
+const handleEdit = (id,account,groupName,nickname,sex,groupId) => {
+  form = reactive({
+    account:account,
+    nickname:nickname,
+    groupName:groupName,
+    groupId:groupId,
+    teaId:id,
+    teaSex:sex
+  })
+};
+// 上传修改过的教师信息
+const getupdateApi=(form)=>{
+  const groupData=async(form)=>{
+    try{
+    let account=form.account;
+    let nickname=form.nickname;
+    let sex=form.teaSex;
+    let id=form.teaId;
+    if(isOnlySpaces(account)==true){
+    ElMessage.error('教师工号不能为空');
+    }else if(isOnlySpaces(nickname)==true){
+      ElMessage.error('教师姓名不能为空');
+    }else {
+      const updateGroupmess=await putTea(account,id,nickname,sex);
+        ElNotification({
+        title: 'Success',
+        message: '教师信息更新成功',
+        type: 'success',
+      })
+    }
+  }catch(error){
+    console.error('小组信息更新失败',error);
+  }
+  }
+  groupData(form);
+  fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+}
+
 const downloadTeacher=()=>{
     // 创建一个隐藏的链接元素
     const link = document.createElement('a');
@@ -151,13 +232,24 @@ const submitFile = async () => {
   if (file.value) {
     try {
       await uploadTea(file.value);
-      alert('文件上传成功');
+      ElNotification({
+        title: 'Success',
+        message: '文件上传成功',
+        type: 'success',
+      })
     } catch (error) {
-      console.error('文件上传失败:', error);
-      alert('文件上传失败');
+      ElNotification({
+      title: 'Error',
+      message: '文件上传失败',
+      type: 'error',
+    })
     }
   } else {
-    alert('请先选择一个文件。');
+    ElNotification({
+    title: 'Error',
+    message: '请先选择一个文件',
+    type: 'error',
+  })
   }
 };
 const handleSelectionChange = (val: User[]) => {
@@ -189,7 +281,7 @@ try{
   total.value = response.data.total;
   tableData.value=response.data.records.map((item)=>({
     account:item.account,
-    name:item.nickname,
+    nickname:item.nickname,
     sex:item.sex,
     groupName:item.groupName,
     id:item.id

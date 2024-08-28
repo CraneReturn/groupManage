@@ -96,9 +96,9 @@ export function uploadTea(file:any){
 }
 
 // 修改老师信息
-export function putTea(){
+export function putTea(account:any,id:any,nickname:any,sex:any){
     return service({
-        url:'/admin/put',
+        url:`/admin/put?account=${account}&id=${id}&nickname=${nickname}&sex=${sex}`,
         method:"put",
         headers: {
             isToken: true,
