@@ -1,48 +1,70 @@
 <!-- 教师端小组信息 -->
 <template>
   <div class="layoutTeacher">
-    <el-container class="main">
+    <el-container>
       <el-header class="header">
         <div class="left">
-          <h1>小组管理系统</h1>
+          <!-- 头部信息 -->
+          <!-- 小组logo以及小组名称 -->
+           <!-- <h1 style="padding-left: 30px;padding-right: 70px;">  小组管理系统</h1> -->
+           <div class="logoAbout">
+              <router-link to="/superAdmin/analysis">
+                <div class="logo">
+                <img src="@/assets/image/school.png" alt="logo" />
+              </div>
+              </router-link> 
+              <div class="info" style="width: 163px;padding-left: 20px">
+                <h1>小组管理系统</h1>
+                <span>管理员</span>
+              </div>
+            </div>
           <div class="change" @click="isCollapse = !isCollapse">
             <el-icon size="25px" v-if="!isCollapse"><Expand /></el-icon>
             <el-icon size="25px" v-else><Fold /></el-icon>
           </div>
         </div>
-
         <div class="right">
-          <div class="userInfo">
-            <p class="userName">钟离</p>
+          <button
+            class="userInfo"
+            v-click-outside="onClickOutside"
+            ref="buttonRef"
+          >
+            <p class="userName">欢迎</p>
             <div class="avater">
-              <img
-                src="https://upload-bbs.miyoushe.com/upload/2020/12/09/93665875/d1a3de452a1ec0fb6863d675f8b6a7b4_356406130344679371.gif"
-                alt="头像"
-              />
+              <img :src="avater?avater:'https://tse2-mm.cn.bing.net/th/id/OIP-C.V6fd81z1SmZgPrSUSQCm_AHaHa?w=196&h=196&c=7&r=0&o=5&dpr=1.1&pid=1.7'" alt="头像" />
+            </div>
+          </button>
+        </div>
+        <el-popover
+          ref="popoverRef"
+          :virtual-ref="buttonRef"
+          trigger="click"
+          virtual-triggering
+          width="80px"
+        >
+          <div class="moreUserInfo">
+           <div class="footer">
+              <el-button size="small" @click="dialogFormVisible = true"
+                >修改密码</el-button
+              >
+              <b></b>
+              <el-button size="small" @click="loginOut">退出登录</el-button>
             </div>
           </div>
-        </div>
+        </el-popover>
       </el-header>
-      <Avator></Avator>
-      <el-container class="main">
-        <el-aside width="220px"
-          ><el-menu
+      <el-container class="mainEqual">
+        <el-aside :class="!isCollapse ? 'aside' : 'asideCollapse'">
+          <el-menu
             default-active="2"
             class="el-menu-vertical-demo"
             :collapse="isCollapse"
             background-color="#fff"
           >
-            <!-- 头部信息 -->
+           <!-- 头部信息 -->
             <!-- 小组logo以及小组名称 -->
-            <div class="logoAbout">
-              <div class="logo">
-                <img src="@/assets/image/school.png" alt="logo" />
-              </div>
-              <div class="info">
-                <span>管理员</span>
-              </div>
-            </div>
-            <router-link to="/superAdmin/analysis">
+           
+             <router-link to="/superAdmin/analysis">
             <el-menu-item index="1">
               <el-icon><Comment /></el-icon>
               <template #title>控制台</template>
@@ -55,7 +77,7 @@
               </template>
               <router-link to="/superAdmin/allGroups">
               <el-menu-item index="2-1">
-                现有小组
+                已成立小组
               </el-menu-item>
             </router-link>
               <router-link to="/superAdmin/groupReview">
@@ -85,56 +107,205 @@
               </template>
             </el-menu-item>
           </router-link>
-            <el-menu-item index="5" disabled>
+          <router-link to="/superAdmin/userCenter">
+            <el-menu-item index="5">
               <el-icon><setting /></el-icon>
-              <template #title>更多</template>
+              <template #title>个人主页</template>
             </el-menu-item>
-          </el-menu></el-aside
-        >
-        <el-main><RouterView /></el-main>
+          </router-link>
+            
+          </el-menu>
+        </el-aside>
+
+        <el-main>
+          <div class="mainTable">
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item
+                v-for="(item, index) in breadcrumbItems"
+                :key="index"
+                :to="item.path"
+              >
+                <template v-if="item.to">
+                  <router-link :to="item.to">{{ item.name }}</router-link>
+                </template>
+                <template v-else>
+                  {{ item.name }}
+                </template>
+              </el-breadcrumb-item>
+            </el-breadcrumb> 
+            <RouterView />
+          </div>
+        </el-main>
       </el-container>
     </el-container>
   </div>
+  <el-dialog v-model="dialogFormVisible" title="修改密码" width="400" draggable>
+    <el-form :model="password">
+      <el-form-item label="旧密码">
+        <el-input
+          v-model="password.oldPassword"
+          autocomplete="off"
+          show-password
+          placeholder="请输入旧密码"
+        />
+      </el-form-item>
+      <el-form-item label="新密码">
+        <el-input
+          v-model="password.newPassword"
+          autocomplete="off"
+          show-password
+          placeholder="请输入新密码"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="changePassword()"> 确定 </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
-import { RouterLink, RouterView } from "vue-router";
+import { computed, onMounted, reactive, ref, unref } from "vue";
+import { RouterLink, RouterView, useRoute } from "vue-router";
+import { userStore } from "@/stores";
+import { changeUserPassword } from "@/api/login";
 import {
   Comment,
   Management,
   UserFilled,
+  Expand,
+  Fold,
   Setting,
 } from "@element-plus/icons-vue";
-import Avator from './components/Avator.vue'
+import { ElMessage, ClickOutside as vClickOutside } from "element-plus";
+interface groupInfo {
+  logo?: File;
+  logoHref?: string;
+  groupName: string;
+  groupAddress: string;
+  groupIntro: string;
+}
+
+const buttonRef = ref();
+const popoverRef = ref();
+const onClickOutside = () => {
+  unref(popoverRef).popperRef?.delayHide?.();
+};
+
+const password = reactive({
+  oldPassword: "",
+  newPassword: "",
+});
+// 状态变量
+const visible = ref(false);
 const isCollapse = ref(false);
+const isEditingName = ref(false);
+const isEditingPhone = ref(false);
+const isEditingEmail = ref(false);
+const apply = ref("");
+const refuse = ref("");
+const dialogFormVisible = ref(false);
+const avater = ref(userStore().avatar);
+
+
+const changePassword = () => {
+  const passwordTest = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+  if (passwordTest.test(password.newPassword)) {
+    changeUserPassword(password).then((response) => {
+      if (!response.data) {
+        ElMessage({
+          message: "密码修改成功",
+          type: "success",
+          plain: true,
+        });
+        dialogFormVisible.value = false;
+      }
+    });
+  } else {
+    ElMessage({
+      message: "密码格式不正确：含英文大小写至少八位字符",
+      type: "error",
+      plain: true,
+    });
+  }
+};
+const route = useRoute();
+
+const breadcrumbItems = computed(() => {
+  const breadcrumbItems = [];
+
+  let path = "";
+
+  breadcrumbItems.push({
+    name: route.name,
+    path: route.path,
+    to: path === "/" ? null : { path },
+  });
+
+  return [{ name: "管理员", path: "/superAdmin" }, ...breadcrumbItems];
+});
+
+const groupId = userStore().groupData.groupId;
+console.log(groupId);
+const loginOut = () => {
+  userStore().Logout();
+};
 </script>
 <style lang="scss" scoped>
+@import url("http://at.alicdn.com/t/c/font_4649268_taducwspn3.css");
 .el-menu-item:hover {
   --el-menu-hover-bg-color: #dfe0e095;
 }
-.el-menu {
+.mainTable {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   height: 100%;
 }
-:deep(.el-container) {
+.aside {
+  width: 220px;
+  transition-delay: 300ms;
+  transition-duration: 0.25s;
+}
+.asideCollapse {
+  width: 65px;
+}
+.el-menu {
   height: 100%;
+  transition-duration: 0.25s;
+  transition: width 0.25s;
+  overflow: hidden;
+}
+:deep(.mainEqual) {
+  height: 90vh;
 }
 .layoutTeacher {
   width: 100vw;
   height: 100vh;
   background-color: #ebebeb;
   header {
-    height: 60px;
+    height: 10vh;
     display: flex;
     justify-content: space-between;
     background-color: #ececfa;
     padding: 0;
     --el-header-padding: 0;
-    padding: 0 20px;
+    padding-right: 50px;
     align-items: center;
-    .userInfo {
+    .left {
       display: flex;
       align-items: center;
-      gap: 10px;
+    }
+    .userInfo {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
       .avater {
         width: 45px;
         height: 45px;
@@ -147,24 +318,40 @@ const isCollapse = ref(false);
       }
       .userName {
         font-size: 14px;
+        color: #9c9c9c;
       }
     }
   }
+
   .logoAbout {
     display: flex;
     align-items: center;
-    gap: 15px;
-    transition-duration: 0.25s;
+    overflow: hidden;
+    transition: width 0.25s, background-color 0.25s;
     border-radius: 10px;
-    padding: 10px;
-    padding-right: 20px;
+    padding: 5px;
     cursor: pointer;
+    .info {
+      transition: opacity 0.25s ease, width 0.25s ease;
+      white-space: nowrap;
+      h1 {
+        font-size: 15px;
+      }
+      span {
+        font-size: 10px;
+        border-radius: 4px;
+        padding: 2px 5px;
+        border: 1px solid #ccc;
+        color: #9c9c9c;
+      }
+    }
   }
+
   .logoAbout:hover {
-    background-color: #dedfe0;
+    background-color: #dedfe0a6;
   }
   .logo {
-    width: 120px;
+    width: 50px;
     height: 50px;
     background-color: #fff;
     border-radius: 10px;
@@ -175,20 +362,86 @@ const isCollapse = ref(false);
       width: 100%;
     }
   }
-  .info {
-    h1 {
-      font-size: 15px;
-    }
-    span {
-      font-size: 10px;
-      border-radius: 4px;
-      padding: 2px 5px;
-      border: 1px solid #ccc;
-      color: #9c9c9c;
-    }
-  }
 }
 .el-main {
   background-color: #fff;
+}
+.active {
+  width: 65px;
+  gap: 0;
+  .info {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+}
+.passive {
+  width: 220px;
+  gap: 15px;
+  .info {
+    opacity: 1;
+    width: 200px;
+    overflow: hidden;
+  }
+}
+.change {
+  cursor: pointer;
+}
+a {
+  color: #12181d;
+  background-color: transparent;
+}
+:deep(.el-popper.is-dark::before) {
+  background: #fff;
+}
+.moreUserInfo {
+  .teacherInfo {
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .avatar {
+      width: 55px;
+      height: 55px;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+    }
+    .info {
+      width: 200px;
+      .userName {
+        margin-bottom: 5px;
+      }
+    }
+  }
+  .userLink {
+    padding: 5px;
+    padding-bottom: 0;
+  }
+  .footer {
+    // border-top: 1px solid #ebebeb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // justify-content: space-between;
+    .el-button {
+      margin: 0;
+      width: 100%;
+      height: 30px;
+      border: none /*  */;
+    }
+  }
+  .edit {
+    margin-left: 5px;
+  }
+}
+:deep(.el-empty__bottom) {
+  margin-top: 0;
+}
+.applyTag {
+  color: #e2aa53;
+  font-size: 14px;
 }
 </style>

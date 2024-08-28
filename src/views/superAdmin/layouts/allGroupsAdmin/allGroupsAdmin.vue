@@ -20,24 +20,14 @@
     <br>
     <br>
 <div>
-  switch parent border: <el-switch v-model="parentBorder" /> 
-  switch child border: <el-switch v-model="childBorder" />
+  显示表格边框: <el-switch v-model="parentBorder" /> 
   <el-table :data="tableData" :border="parentBorder" style="width: 100%">
     <el-table-column type="expand">
       <template #default="props">
-        <div m="4">
-          <p m="t-0 b-2">State: {{ props.row.state }}</p>
-          <p m="t-0 b-2">City: {{ props.row.city }}</p>
-          <p m="t-0 b-2">Address: {{ props.row.address }}</p>
-          <p m="t-0 b-2">Zip: {{ props.row.zip }}</p>
-          <h3>Family</h3>
-          <el-table :data="props.row.family" :border="childBorder">
-            <el-table-column label="Name" prop="name" />
-            <el-table-column label="State" prop="state" />
-            <el-table-column label="City" prop="city" />
-            <el-table-column label="Address" prop="address" />
-            <el-table-column label="Zip" prop="zip" />
-          </el-table>
+        <div m="4" style="padding-left: 60px;padding-right: 60px;">
+          <p m="t-0 b-2">创办时间: {{ props.row.date }}</p>
+          <p m="t-0 b-2">小组人员: {{ props.row.people }}</p>
+          <p m="t-0 b-2">小组简介: {{ props.row.intro }}</p>
         </div>
       </template>
     </el-table-column>
@@ -111,7 +101,6 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 const router = useRouter()  
 const parentBorder = ref(false)
-const childBorder = ref(false)
 const groups=ref([]);
 const tableData = ref<any[]>([]); // 使用 ref 来使数据响应式
 //更新分页器的事件处理函数，确保每次分页器的当前页码或每页数据量改变时，都会调用 fetchGroups 重新加载数据
@@ -137,6 +126,7 @@ var form = reactive({
 const fetchGroups=async(groupName,page,pageSize,status)=>{
 try{
   const response=await getGroup(groupName,page,pageSize,status);
+  console.log('所有小组信息',response);
   groups.value=response.data;//根据接口返回的数据结构进行调整
   total.value = response.data.total;
   tableData.value=response.data.records.map((item:any)=>({
@@ -148,14 +138,16 @@ try{
     address:item.groupAddress,
     id:item.groupId,
     intro:item.groupIntro,
-    family:item.nickname.map((name:string)=>({
-      name,
-      state:'已经上市',
-      city:'背景',
-      address:item.groupAddress,
-      zip:'N/A',
-    })
-  )
+    people:item.nickname.join(' ,'),
+    grouAvatar:item.groupAvatar
+  //   family:item.nickname.map((name:string)=>({
+  //     name,
+  //     state:'已经上市',
+  //     city:'背景',
+  //     address:item.groupAddress,
+  //     zip:'N/A',
+  //   })
+  // )
   })
 )
   console.log('表格数据',tableData.value);
