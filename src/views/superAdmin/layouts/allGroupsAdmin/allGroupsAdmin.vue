@@ -26,7 +26,7 @@
       <template #default="props">
         <div m="4" style="padding-left: 60px;padding-right: 60px;">
           <p m="t-0 b-2">创办时间: {{ props.row.date }}</p>
-          <p m="t-0 b-2">小组人员: {{ props.row.people }}</p>
+          <p m="t-0 b-2">小组老师: {{ props.row.people }}</p>
           <p m="t-0 b-2" >小组简介: {{ props.row.intro }}</p>
         </div>
       </template>
@@ -38,8 +38,7 @@
     <el-button @click="handleLook(row.id,row.name) " type="success" plain size="small">查看学生</el-button>
     <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.address,row.groupName,row.intro) " 
      type="primary" plain size="small">修改</el-button>
-    <el-button @click="handleDelete(row.id)" type="danger" plain size="small">删除</el-button>
-  </template>
+ </template>
 </el-table-column>
 
   </el-table>
@@ -216,11 +215,6 @@ const refreshData=()=>{
   fetchGroups('',currentPage.value, pageSize.value,status.value);
 }
 
-//删除
-const handleDelete = (id: string) => {
-  // 处理删除操作
-  console.log('删除:', id);
-};
 props:{
   total;
 } 

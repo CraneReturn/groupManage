@@ -410,9 +410,10 @@
   
   <style lang="scss" scoped>
   .userCenter {
-    width: 900px;
-    min-height: 100vh;
-    margin: auto;
+    padding-top: 80px;
+    width: 70vw;
+    min-height: 96vh;
+    margin-left: 5vw;
     position: relative;
     background-color: #fff;
     .background-img {
@@ -432,7 +433,7 @@
         height: 100px;
         position: absolute;
         top: -40px;
-        left: 20px;
+        left: 10px;
       }
       .header-content {
         padding-left: 135px;

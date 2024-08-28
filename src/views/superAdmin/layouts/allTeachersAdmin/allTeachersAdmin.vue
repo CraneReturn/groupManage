@@ -52,7 +52,7 @@
           >
             <el-table-column type="selection" width="55" />
             <el-table-column property="account" label="工号" width="190" />
-            <el-table-column property="name" label="姓名" width="120" />
+            <el-table-column property="nickname" label="姓名" width="120" />
             <el-table-column property="sex" label="性别" width="120" />
             <el-table-column property="groupName" label="小组名称"  />
             <el-table-column label="操作">
@@ -83,7 +83,7 @@
       <el-dialog v-model="dialogFormVisible" title="修改教师信息" width="500"  >
     <el-form :model="form">
       <el-form-item label="姓名" :label-width="formLabelWidth">
-        <el-input v-model="form.teaName" autocomplete="off" />
+        <el-input v-model="form.nickname" autocomplete="off" />
       </el-form-item>
       <el-form-item label="性别" :label-width="formLabelWidth">
         <el-input v-model="form.teaSex" autocomplete="off" />
@@ -145,9 +145,10 @@ const teachers=ref([]);
 // const teachersIds=ref([]);
 const handleEdit = (id,account,groupName,nickname,sex,groupId) => {
   console.log('教师姓名',nickname);
+  console.log('教师工号',account);
   form = reactive({
     account:account,
-    teaName:nickname,
+    nickname:nickname,
     groupName:groupName,
     groupId:groupId,
     teaId:id,
@@ -156,12 +157,12 @@ const handleEdit = (id,account,groupName,nickname,sex,groupId) => {
 };
 const select = ref('')
 const account=ref('');
-const nickname=ref('')
+const nickname=ref('');
 const file = ref(null);
 const formLabelWidth = '140px'
 var form = reactive({
     account:'',
-    teaName:'',
+    nickname:'',
     groupName:'',
     groupId:'',
     teaId:'',
@@ -238,7 +239,7 @@ try{
   total.value = response.data.total;
   tableData.value=response.data.records.map((item)=>({
     account:item.account,
-    name:item.nickname,
+    nickname:item.nickname,
     sex:item.sex,
     groupName:item.groupName,
     id:item.id

@@ -35,12 +35,6 @@
       <el-table-column label="小组名称" prop="name" />
       <el-table-column label="小组位置" prop="address" />
       <el-table-column label="申请时间" prop="date" />
-      <el-table-column label="操作">
-    <template #default="{ row }">
-      <el-button  @click.stop="dialogFormVisible = true" type="danger" plain size="small">删除信息</el-button>
-    </template>
-  </el-table-column>
-  
     </el-table>
   </div>
   <!-- 分页器部分 -->
