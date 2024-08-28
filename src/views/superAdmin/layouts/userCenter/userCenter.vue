@@ -20,7 +20,7 @@
           <h2>基本信息</h2>
           <div class="info-content">
             <el-form :model="form" label-width="auto">
-              <el-form-item label="学号">
+              <el-form-item label="工号">
                 <span>{{ userInfo.account }}</span>
               </el-form-item>
               <el-form-item label="昵称">

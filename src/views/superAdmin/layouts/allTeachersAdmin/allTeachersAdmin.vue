@@ -86,14 +86,17 @@
         <el-input v-model="form.nickname" autocomplete="off" />
       </el-form-item>
       <el-form-item label="性别" :label-width="formLabelWidth">
-        <el-input v-model="form.teaSex" autocomplete="off" />
+        <el-radio-group v-model="form.teaSex">
+            <el-radio value="男" name="teaSex">男</el-radio>
+            <el-radio value="女" name="teaSex">女</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="工号" :label-width="formLabelWidth">
         <el-input v-model="form.account" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="小组" :label-width="formLabelWidth">
+      <!-- <el-form-item label="小组" :label-width="formLabelWidth">
         <el-input v-model="form.groupName" autocomplete="off" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="教师id" :label-width="formLabelWidth" style="display: none;">
         <el-input v-model="form.teaId" autocomplete="off" />
       </el-form-item>
@@ -125,13 +128,9 @@ import { getTea } from '@/api/admin.ts';
 import { del } from '@/api/admin.ts'
 import { ElMessage } from 'element-plus'
 import { uploadTea } from '@/api/admin.ts';
-interface User {
-  id:string
-  account: string
-  name: string
-  sex: string
-  groupName: string
-}
+import { putTea } from '@/api/admin.ts';
+import { ElNotification } from 'element-plus'
+
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const multipleSelection = ref<User[]>([])
 const input3 = ref('');
@@ -142,19 +141,6 @@ const tableData = ref<any[]>([]); // 使用 ref 来使数据响应式
 const selectedRows = ref<any[]>([]); // 使用 ref 来使数据响应式
 const dialogFormVisible = ref(false)
 const teachers=ref([]);
-// const teachersIds=ref([]);
-const handleEdit = (id,account,groupName,nickname,sex,groupId) => {
-  console.log('教师姓名',nickname);
-  console.log('教师工号',account);
-  form = reactive({
-    account:account,
-    nickname:nickname,
-    groupName:groupName,
-    groupId:groupId,
-    teaId:id,
-    teaSex:sex
-  })
-};
 const select = ref('')
 const account=ref('');
 const nickname=ref('');
@@ -168,6 +154,51 @@ var form = reactive({
     teaId:'',
     teaSex:''
   })
+  interface User {
+  id:string
+  account: string
+  name: string
+  sex: string
+  groupName: string
+}
+// const teachersIds=ref([]);
+const handleEdit = (id,account,groupName,nickname,sex,groupId) => {
+  form = reactive({
+    account:account,
+    nickname:nickname,
+    groupName:groupName,
+    groupId:groupId,
+    teaId:id,
+    teaSex:sex
+  })
+};
+// 上传修改过的教师信息
+const getupdateApi=(form)=>{
+  const groupData=async(form)=>{
+    try{
+    let account=form.account;
+    let nickname=form.nickname;
+    let sex=form.teaSex;
+    let id=form.teaId;
+    if(isOnlySpaces(account)==true){
+    ElMessage.error('教师工号不能为空');
+    }else if(isOnlySpaces(nickname)==true){
+      ElMessage.error('教师姓名不能为空');
+    }else {
+      const updateGroupmess=await putTea(account,id,nickname,sex);
+        ElNotification({
+        title: 'Success',
+        message: '教师信息更新成功',
+        type: 'success',
+      })
+    }
+  }catch(error){
+    console.error('小组信息更新失败',error);
+  }
+  }
+  groupData(form);
+  fetchTeachers(account.value,nickname.value,currentPage.value, pageSize.value);
+}
 
 const downloadTeacher=()=>{
     // 创建一个隐藏的链接元素
@@ -201,13 +232,24 @@ const submitFile = async () => {
   if (file.value) {
     try {
       await uploadTea(file.value);
-      alert('文件上传成功');
+      ElNotification({
+        title: 'Success',
+        message: '文件上传成功',
+        type: 'success',
+      })
     } catch (error) {
-      console.error('文件上传失败:', error);
-      alert('文件上传失败');
+      ElNotification({
+      title: 'Error',
+      message: '文件上传失败',
+      type: 'error',
+    })
     }
   } else {
-    alert('请先选择一个文件。');
+    ElNotification({
+    title: 'Error',
+    message: '请先选择一个文件',
+    type: 'error',
+  })
   }
 };
 const handleSelectionChange = (val: User[]) => {
