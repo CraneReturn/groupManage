@@ -57,7 +57,7 @@
             <el-table-column property="groupName" label="小组名称"  />
             <el-table-column label="操作">
             <template #default="{ row }">
-              <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.address,row.groupName,row.intro) " 
+              <el-button @click.native="dialogFormVisible = true" @click.stop="handleEdit(row.id,row.account,row.groupName,row.nickname,row.sex,row.groupId) " 
               type="primary" plain size="small">修改</el-button>
             </template>
           </el-table-column>
@@ -80,7 +80,36 @@
           />
         </div>
     <div>
+      <el-dialog v-model="dialogFormVisible" title="修改教师信息" width="500"  >
+    <el-form :model="form">
+      <el-form-item label="姓名" :label-width="formLabelWidth">
+        <el-input v-model="form.teaName" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="性别" :label-width="formLabelWidth">
+        <el-input v-model="form.teaSex" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="工号" :label-width="formLabelWidth">
+        <el-input v-model="form.account" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="小组" :label-width="formLabelWidth">
+        <el-input v-model="form.groupName" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="教师id" :label-width="formLabelWidth" style="display: none;">
+        <el-input v-model="form.teaId" autocomplete="off" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click.stop="dialogFormVisible = false" @click.native="getupdateApi(form)">
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
     </div>
+
+
     </div>
 </template>
  
@@ -111,14 +140,34 @@ const pageSize = ref(10);
 const total = ref(0); // 定义响应式总记录数变量
 const tableData = ref<any[]>([]); // 使用 ref 来使数据响应式
 const selectedRows = ref<any[]>([]); // 使用 ref 来使数据响应式
-
+const dialogFormVisible = ref(false)
 const teachers=ref([]);
 // const teachersIds=ref([]);
-
+const handleEdit = (id,account,groupName,nickname,sex,groupId) => {
+  console.log('教师姓名',nickname);
+  form = reactive({
+    account:account,
+    teaName:nickname,
+    groupName:groupName,
+    groupId:groupId,
+    teaId:id,
+    teaSex:sex
+  })
+};
 const select = ref('')
 const account=ref('');
 const nickname=ref('')
 const file = ref(null);
+const formLabelWidth = '140px'
+var form = reactive({
+    account:'',
+    teaName:'',
+    groupName:'',
+    groupId:'',
+    teaId:'',
+    teaSex:''
+  })
+
 const downloadTeacher=()=>{
     // 创建一个隐藏的链接元素
     const link = document.createElement('a');

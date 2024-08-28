@@ -27,7 +27,7 @@
         <div m="4" style="padding-left: 60px;padding-right: 60px;">
           <p m="t-0 b-2">创办时间: {{ props.row.date }}</p>
           <p m="t-0 b-2">小组人员: {{ props.row.people }}</p>
-          <p m="t-0 b-2">小组简介: {{ props.row.intro }}</p>
+          <p m="t-0 b-2" >小组简介: {{ props.row.intro }}</p>
         </div>
       </template>
     </el-table-column>
@@ -61,8 +61,8 @@
     />
   </div>
 <!-- 对话框部分 -->
- <div>
 
+ <div>
   <el-dialog v-model="dialogFormVisible" title="修改小组信息" width="500"  >
     <el-form :model="form">
       <el-form-item label="小组名称" :label-width="formLabelWidth">
@@ -112,7 +112,7 @@ const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const input3 = ref('');
 const handleLook=(id,name)=>{
-  router.push({name:'groupStudents',query:{id,name}})
+  router.push({path:'groupStudents',query:{id,name}})
 }
 
 var form = reactive({
@@ -139,15 +139,15 @@ try{
     id:item.groupId,
     intro:item.groupIntro,
     people:item.nickname.join(' ,'),
-    grouAvatar:item.groupAvatar
-  //   family:item.nickname.map((name:string)=>({
-  //     name,
-  //     state:'已经上市',
-  //     city:'背景',
-  //     address:item.groupAddress,
-  //     zip:'N/A',
-  //   })
-  // )
+    grouAvatar:item.groupAvatar,
+    family:item.nickname.map((name:string)=>({
+      name,
+      state:'已经上市',
+      city:'背景',
+      address:item.groupAddress,
+      zip:'N/A',
+    })
+  )
   })
 )
   console.log('表格数据',tableData.value);

@@ -83,7 +83,7 @@ const handleCurrentChange = (page) => {
   fetchGroupstudents(id,currentPage.value, pageSize.value);
 };
 const backAllGroup=()=>{
-  router.push({name:'allGroups'})
+  router.push({path:'allGroups'})
 }
 props:{
   total;
