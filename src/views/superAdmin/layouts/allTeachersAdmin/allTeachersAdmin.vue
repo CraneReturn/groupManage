@@ -245,7 +245,7 @@ const submitFile = async () => {
     } catch (error) {
       ElNotification({
       title: 'Error',
-      message: '文件上传失败',
+      message: '请使用下载的教师样表，此格式文件上传失败',
       type: 'error',
     })
     }
