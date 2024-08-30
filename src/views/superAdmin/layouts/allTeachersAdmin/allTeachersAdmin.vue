@@ -26,15 +26,17 @@
       </div>
     </div>
       <div style="height: 50px;">
-        <el-input 
+        <label for="file-upload" class="custom-file-upload" >
+          + 选择文件
+        </label>
+        <input 
+        id="file-upload" 
         type="file" 
         @change="handleFileChange" 
-        style="width: 240px;"
-        accept=".xlsx,.xls" />
-        <el-button @click="submitFile" type="primary" :icon="Plus">
-          <span style="vertical-align: middle">导入教师信息</span>
-          </el-button>
-        <el-button @click="downloadTeacher" type="success" :icon="Download">
+        accept=".xlsx,.xls" 
+        hidden
+        />
+        <el-button @click="downloadTeacher" type="success" :icon="Download" style="margin-left: 30px;">
           <span style="vertical-align: middle">下载导入老师样表</span>
           </el-button>
         <el-button @click="handleDelete()" type="danger" :icon="Delete">
@@ -111,8 +113,6 @@
     </template>
   </el-dialog>
     </div>
-
-
     </div>
 </template>
  
@@ -221,8 +221,13 @@ const handleFileChange = (event) => {
     const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
     if (allowedTypes.includes(selectedFile.type)) {
       file.value = selectedFile;
+      submitFile();
     } else {
-      alert('请选择有效的 Excel 文件。');
+      ElNotification({
+      title: 'Error',
+      message: '请选择有效的 Excel 文件。',
+      type: 'error',
+    })
       file.value = null;
     }
   }
@@ -240,7 +245,7 @@ const submitFile = async () => {
     } catch (error) {
       ElNotification({
       title: 'Error',
-      message: '文件上传失败',
+      message: '请使用下载的教师样表，此格式文件上传失败',
       type: 'error',
     })
     }
@@ -347,5 +352,19 @@ const refreshData=()=>{
 <style>
 .input-with-select .el-input-group__prepend {
   background-color: var(--el-fill-color-blank);
+}
+/* 自定义上传按钮的样式 */
+.custom-file-upload {
+  border: 1px solid #e0e0e0;
+  display: inline-block;
+  padding: 3px 12px;
+  cursor: pointer;
+  background-color: #909399; /* 灰色背景 */
+  color: white; /* 文字颜色 */
+  border-radius: 4px; /* 圆角边框 */
+}
+
+.custom-file-upload:hover {
+  background-color: #e0e0e0; /* 鼠标悬停时的背景颜色 */
 }
 </style>
