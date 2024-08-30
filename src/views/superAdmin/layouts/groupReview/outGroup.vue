@@ -29,6 +29,9 @@
             <p m="t-0 b-2">
               小组简介: {{ props.row.intro }}
             </p>  
+            <p m="t-0 b-2">   
+              拒绝的原因：{{props.row.groupRefusedReason}}
+            </p> 
           </div>
         </template>
       </el-table-column>
@@ -134,6 +137,7 @@
       address:item.groupAddress,
       id:item.groupId,
       intro:item.groupIntro,
+      groupRefusedReason:item.groupRefusedReason
     })
   )
     console.log('表格数据',tableData.value);
