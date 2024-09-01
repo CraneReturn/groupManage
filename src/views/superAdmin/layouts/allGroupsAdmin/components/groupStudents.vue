@@ -11,6 +11,7 @@
       <el-table-column prop="name" label="姓名" width="180" />
       <el-table-column prop="sex" label="性别" width="180" />
       <el-table-column prop="college" label="专业" width="180" />
+      <el-table-column prop="grade" label="年级" width="180" />
       <el-table-column prop="ownClass" label="班级" />
       </el-table>
     </div>
@@ -67,6 +68,7 @@ try{
     sex:item.sex,
     ownClass:item.ownClass,
     college:item.college,
+    grade:item.grade,
   }));
 }catch(error){
   console.error('Error fetching groups:',error);

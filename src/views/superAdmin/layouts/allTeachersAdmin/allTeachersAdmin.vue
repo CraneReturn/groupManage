@@ -236,7 +236,7 @@ const handleFileChange = (event) => {
 const submitFile = async () => {
   if (file.value) {
     try {
-      await uploadTea(file.value);
+      const response=await uploadTea(file.value);
       ElNotification({
         title: 'Success',
         message: '文件上传成功',
@@ -248,6 +248,7 @@ const submitFile = async () => {
       message: '请使用下载的教师样表，此格式文件上传失败',
       type: 'error',
     })
+    // ElMessage.error("请使用下载的教师样表，此格式文件上传失败");
     }
   } else {
     ElNotification({

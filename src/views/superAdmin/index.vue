@@ -96,7 +96,7 @@
             <el-menu-item index="4">
               <el-icon><Management /></el-icon>  
               <template #title>
-                报修审核
+                保修记录
               </template>
             </el-menu-item>
           </router-link>

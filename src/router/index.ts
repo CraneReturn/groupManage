@@ -127,7 +127,7 @@ const router = createRouter({
         },
         {
           path: "repairReview",
-          name: "报修审核",
+          name: "保修记录",
           component: () =>
             import("@/views/superAdmin/layouts/repairReview/repairReview.vue"),
         },
