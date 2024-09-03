@@ -18,24 +18,23 @@
       <el-button type="primary" @click="searchLeaves">搜索</el-button>
       <el-button type="default" @click="getNewAllData">重置</el-button>
     </div>
-    <!-- {{leavesdata}} -->
     <div class="table">
       <el-table :data="leavesdata" style="width: 100%">
         
-        <el-table-column label="年级">
+        <el-table-column label="请假人员">
           <template #default="scope">
-            <!-- {{scope.row}} -->
-            <el-tag>{{ scope.row.userMessage.grade }}</el-tag>
+    
+            <span>{{ scope.row.userName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="学号">
+        <el-table-column label="批假人员">
           <template #default="scope">
-            <span>{{ scope.row.userMessage.account}}</span>
+            <span>{{ scope.row.appRoveName}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="姓名">
+        <el-table-column label="请假原因">
           <template #default="scope">
-            <span>{{ scope.row.userMessage.nickname}}</span>
+            <span>{{ scope.row.reason}}</span>
           </template>
         </el-table-column>
 
@@ -44,7 +43,7 @@
             <el-tag> {{ scope.row.leaveType}} </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="请假时长">
+        <el-table-column label="请假时长" min-width="150px">
           <template #default="scope">
             <el-tag>{{ scope.row.startDate}}-{{ scope.row.endDate}} </el-tag>
           </template>

@@ -14,18 +14,16 @@ const getStudentLeave = (async () => {
         leavesdata.value=[]
         leaveallpage.value = allData.data.pages;
     
-        if (allData.data.records.length !== 0) {
-            const promises = allData.data.records.map(async (leaves) => {
-                const id = leaves.userId;
-                const leaveUserMessage = await getUserMessageByid(id);
-                leaves.userMessage = { ...leaveUserMessage };
-            });
-            await Promise.all(promises);
-        }
-        leavesdata.value = [...allData.data.records];
-        console.log(leaveallpage.value);
-        
-
+        // if (allData.data.records.length !== 0) {
+        //     const promises = allData.data.records.map(async (leaves) => {
+        //         const id = leaves.userId;
+        //         const leaveUserMessage = await getUserMessageByid(id);
+        //         leaves.userMessage = { ...leaveUserMessage };
+        //     });
+        //     await Promise.all(promises);
+        // }
+        leavesdata.value = [...allData.data];
+    
 
     } else {
         leavesdata.value = [];
@@ -40,15 +38,15 @@ const searchLeaves = (async () => {
         leavesdata.value=[]
         leaveallpge.value = searchData.data.pages;
         if (searcahData.code == 20000) {
-            if (searchData.data.records.length !== 0) {
-                const promises = searchData.data.records.map(async (leaves) => {
-                    const id = leaves.userId;
-                    const leaveUserMessage = await getUserMessageByid(id);
-                    leaves.userMessage = { ...leaveUserMessage };
-                });
-                await Promise.all(promises);
-            }
-            leavesdata.value = [...searchData.data.records];
+            // if (searchData.data.records.length !== 0) {
+            //     const promises = searchData.data.records.map(async (leaves) => {
+            //         const id = leaves.userId;
+            //         const leaveUserMessage = await getUserMessageByid(id);
+            //         leaves.userMessage = { ...leaveUserMessage };
+            //     });
+            //     await Promise.all(promises);
+            // }
+            leavesdata.value = [...searchData.data];
 
         } else {
             leavesdata.value = []

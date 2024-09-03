@@ -113,7 +113,7 @@ service.interceptors.response.use(
           })
           .then(() => {
             // 重新登录后的处理，比如跳转到首页
-            router.push("/");
+            router.push("/login");
           })
           .catch(() => {
             isRelogin.show = false;
