@@ -1,6 +1,6 @@
 # group-manage
 
-This template should help get you started developing with Vue 3 in Vite.
+基于小组管理需要线上管理的小组管理平台基于ts+vue3开发
 
 ## Recommended IDE Setup
 
